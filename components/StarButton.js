@@ -10,9 +10,9 @@ const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
 
-const StarButton = ({style, symbol}) => {
+const StarButton = ({style, symbol, init}) => {
 
-    const [fvselector, setFavStock] = useState(favstar);
+    const [fvselector, setFavStock] = useState(init);
     const { getUsername } = useAuth();
     
 

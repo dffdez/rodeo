@@ -5,6 +5,8 @@ import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Mo
 import TextInputApp from '../components/TextInputApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 import StarButton from '../components/StarButton';
+import favstar from '../assets/favstar.png';
+import nofavstar from '../assets/nofavstar.png';
 
 
 
@@ -16,12 +18,13 @@ const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
 
-
 const TrackingAll = ({navigation}) => {
 
   const { getUsername } = useAuth();
 
   const [data, setData] = useState([]);
+  const [favdata, setfavData] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [viewselector, setView] = useState('Mostrar todo');
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,13 +44,18 @@ const TrackingAll = ({navigation}) => {
       setView('Mostrar todo')
     }
   }
-
-
   
   const fetchData = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStocks')
-
+    const response = await fetch('http://'+ip+':'+port+'/getStocksFav', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          alias: getUsername(),
+      }),
+  });
     const data = await response.json();
     setData(data);
     setLoading(false);   
@@ -59,12 +67,22 @@ const TrackingAll = ({navigation}) => {
   }, []);
 
 
-
   const infoStock = (symbol, name) => {
 
     setSymbol(symbol)
     setName(name)
     setModalVisible(true)
+
+  }
+
+  // Shows black star if favourite or blank in other case
+  const starselector = (fav) => {
+
+    if(fav == true){
+      return favstar
+    } else {    
+      return nofavstar
+    }
 
   }
 
@@ -105,11 +123,11 @@ const TrackingAll = ({navigation}) => {
         renderItem={({item}) => 
           <TouchableOpacity style={styles.listWrapper} onPress={() => infoStock(item[0], item[1])}> 
 
-            <StarButton style={styles.favrow} symbol={item[0]}/> 
+            <StarButton style={styles.favrow} symbol={item[0][0]} init={starselector(item[1])}/> 
 
             <View style={styles.row}>
-              <Text style={styles.symbol}>{item[0]}</Text>
-              <Text style={styles.name}>{item[1]}</Text>
+              <Text style={styles.symbol}>{item[0][0]}</Text>
+              <Text style={styles.name}>{item[0][1]}</Text>
             </View>
             <Text style={styles.row}>Precio</Text>
             <Text style={styles.row}>Semáforo</Text>

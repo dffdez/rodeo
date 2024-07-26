@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 
 import StarButton from '../components/StarButton';
+import favstar from '../assets/favstar.png';
+import nofavstar from '../assets/nofavstar.png';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 
 import {useAuth} from '../context/AuthContext';
@@ -110,7 +112,7 @@ const Tracking = ({navigation}) => {
         renderItem={({item}) => 
           <TouchableOpacity style={styles.listWrapper} onPress={() => infoStock(item[0], item[1])}> 
           
-            <StarButton style={styles.favrow} symbol={item[0]}/> 
+            <StarButton style={styles.favrow} symbol={item[0]} init={favstar}/> 
 
             <View style={styles.row}>
               <Text style={styles.symbol}>{item[0]}</Text>
