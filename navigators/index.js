@@ -21,6 +21,7 @@ import TrackingAdmin from '../screens/TrackingAdmin';
 import BlogAdmin from '../screens/BlogAdmin';
 import ChatIndex from './../screens/ChatIndex';
 import ChatAdmin from '../screens/ChatAdmin';
+import Stoplighconfig from '../screens/Admin/StoplightConfig';
 
 
 
@@ -102,6 +103,7 @@ const ProfileNav = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="ProfileAdmin" component={ProfileAdmin} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} />
         </Stack.Navigator>
     )
 }
