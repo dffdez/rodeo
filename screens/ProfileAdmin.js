@@ -176,9 +176,6 @@ const ProfileAdmin = ({navigation}) => {
         </Modal>
 
 
-
-
-
       {loading && <Text style={styles.loading}>Cargando...</Text>}
 
       {data &&
@@ -193,8 +190,11 @@ const ProfileAdmin = ({navigation}) => {
         />
       }
 
-      <ButtonAppSecondary title={'Perfil de administrador'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
+      <ButtonAppSecondary title={'Gestión de usuarios'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
 
+      <ButtonAppSecondary title={'Configuración de semáforo'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Stoplighconfig')}/>
+
+      <ButtonAppSecondary title={'Perfil'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
         
 
 

@@ -6,6 +6,7 @@ import StarButton from '../components/StarButton';
 import favstar from '../assets/favstar.png';
 import nofavstar from '../assets/nofavstar.png';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
+import Stoplight from '../components/Stoplight';
 
 import {useAuth} from '../context/AuthContext';
 
@@ -119,7 +120,8 @@ const Tracking = ({navigation}) => {
               <Text style={styles.name}>{item[1]}</Text>
             </View>
             <Text style={styles.row}>Precio</Text>
-            <Text style={styles.row}>Semáforo</Text>
+
+            <Stoplight style={styles.favrow}/> 
           </TouchableOpacity> 
         }
         />
@@ -198,10 +200,8 @@ const Tracking = ({navigation}) => {
 
     favrow: {
       backgroundColor: '#fff',
-      //flex: 1,
       marginBottom: 20,
       marginTop:20,
-      //fontSize: 15,
       paddingHorizontal: 10,
     },
 

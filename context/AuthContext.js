@@ -17,7 +17,7 @@ const AuthProvider = ({children}) => {
         username: 'usuario1',
         accessToken: null,
         authenticated: true,
-        admin: false,
+        admin: true,
     });
 
 

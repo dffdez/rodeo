@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { FlatList, StyleSheet, Text, Platform, View, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 
 import TextInputApp from '../components/TextInputApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 import StarButton from '../components/StarButton';
 import favstar from '../assets/favstar.png';
 import nofavstar from '../assets/nofavstar.png';
+import Stoplight from '../components/Stoplight';
 
 
 
@@ -23,12 +24,9 @@ const TrackingAll = ({navigation}) => {
   const { getUsername } = useAuth();
 
   const [data, setData] = useState([]);
-  const [favdata, setfavData] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [viewselector, setView] = useState('Mostrar todo');
   const [modalVisible, setModalVisible] = useState(false);
-
   const[symbol, setSymbol] = useState('');
   const[name, setName] = useState('');
 
@@ -121,7 +119,7 @@ const TrackingAll = ({navigation}) => {
         //extraData={refreshList}
 
         renderItem={({item}) => 
-          <TouchableOpacity style={styles.listWrapper} onPress={() => infoStock(item[0], item[1])}> 
+          <TouchableOpacity style={styles.listWrapper} onPress={() => infoStock(item[0][0], item[0][1])}> 
 
             <StarButton style={styles.favrow} symbol={item[0][0]} init={starselector(item[1])}/> 
 
@@ -130,7 +128,8 @@ const TrackingAll = ({navigation}) => {
               <Text style={styles.name}>{item[0][1]}</Text>
             </View>
             <Text style={styles.row}>Precio</Text>
-            <Text style={styles.row}>Semáforo</Text>
+
+            <Stoplight style={styles.favrow}/> 
           </TouchableOpacity> 
         }
         />

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, TextInput, View, Platform, TouchableOpacity, Modal, SafeAreaView, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { ColorPicker } from 'react-native-color-picker';
+import Slider from '@react-native-community/slider';
 
 import TextInputApp from '../components/TextInputApp';
 import ButtonApp from '../components/ButtonApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
+import Stoplight from '../components/Stoplight';
 
 
 import rodeoserver from '../serverconn_conf/ServerAddress'
@@ -144,7 +147,7 @@ const TrackingAdmin = ({navigation}) => {
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                   <View style={styles.modalview}>
 
-                      <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Acción/Crypto" />
+       <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Acción/Crypto" />
                       <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={acselector} onPress={() => changeSelector()}/>
 
                       <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Añadir'} onPress={() => newStock()}/>
@@ -204,7 +207,8 @@ const TrackingAdmin = ({navigation}) => {
                 <Text style={styles.name}>{item[1]}</Text>
               </View>
               <Text style={styles.row}>Precio</Text>
-              <Text style={styles.row}>Semáforo</Text>
+
+            <Stoplight style={styles.favrow}/> 
 
 
 
@@ -276,6 +280,15 @@ const TrackingAdmin = ({navigation}) => {
       marginBottom: 20,
       marginTop:20,
       fontSize: 15,
+      paddingHorizontal: 10,
+    },
+
+    favrow: {
+      backgroundColor: '#fff',
+      //flex: 1,
+      marginBottom: 20,
+      marginTop:20,
+      //fontSize: 15,
       paddingHorizontal: 10,
     },
 
