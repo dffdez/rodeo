@@ -92,9 +92,9 @@ const TrackUserNav = () => {
 
 const ChatNav = () => {
     return(
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="ChatIndex" component={ChatIndex} />
-            <Stack.Screen name="ChatAdmin" component={ChatAdmin} />
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="ChatIndex" component={ChatIndex} options={{headerTitle: "Consultas"}} />
+            <Stack.Screen name="ChatAdmin" component={ChatAdmin} options={{headerTitle: "Consultas"}}/>
         </Stack.Navigator>
     )
 }

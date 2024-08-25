@@ -16,8 +16,8 @@ const AuthProvider = ({children}) => {
     const [authState, setAuthState] = useState({
         username: 'usuario1',
         accessToken: null,
-        authenticated: false,
-        admin: false,
+        authenticated: true,
+        admin: true,
     });
 
 

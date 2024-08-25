@@ -3,11 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, FlatList, SafeAreaView, Platform} from 'react-native';
 import { io } from 'socket.io-client'
 
-import TextInputApp from '../components/TextInputApp';
-import ButtonApp from '../components/ButtonApp';
+
 import ChatBubble from '../components/ChatBubble';
 import ChatTextInput from '../components/ChatTextInput';
-import ChatIndex from './ChatIndex';
 
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
@@ -27,7 +25,6 @@ const ChatAdmin = ({route, navigation}) => {
   const [loading, setLoading] = useState(true);
   
   const[message, setMessage] = useState('')
-  //const[refreshList, setRefreshList] = useState(false);
 
 
   //Funciones base websockets
@@ -36,15 +33,12 @@ const ChatAdmin = ({route, navigation}) => {
     //Cargar mensajes antiguos
     fetchData();
 
-
     ws.on('connect', () => {
       ws.emit('join', alias)
     });
 
     ws.on('message', (data) => {
       fetchData();
-
-      //console.log(data.data)
     });
 
     ws.on('close', () => {
