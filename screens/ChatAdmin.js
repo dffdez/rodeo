@@ -1,28 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, FlatList, SafeAreaView, Platform} from 'react-native';
+import { io } from 'socket.io-client'
 
-import TextInputApp from '../components/TextInputApp';
-import ButtonApp from '../components/ButtonApp';
+
 import ChatBubble from '../components/ChatBubble';
 import ChatTextInput from '../components/ChatTextInput';
-import ChatIndex from './ChatIndex';
 
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
 const ip = ADDRESS.IP
 const port = ADDRESS.PORT
 
+//Poner esto aquí inicia la conexión al entrar en la app
+const ws = io('ws://'+ip+':'+port+'/chat')
 
-//Comprobar parámetro navigation
+
+
 const ChatAdmin = ({route, navigation}) => {
 
   const {alias} = route.params;
 
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const[message, setMessage] = useState('')
 
+
+  //Funciones base websockets
+  useEffect(() => {
+
+    //Cargar mensajes antiguos
+    fetchData();
+
+    ws.on('connect', () => {
+      ws.emit('join', alias)
+    });
+
+    ws.on('message', (data) => {
+      fetchData();
+    });
+
+    ws.on('close', () => {
+      ws.emit('leave', alias)
+
+    });
+
+    ws.on('error', (data) => {
+      //console.log(data.data)
+    });
+
+
+  }, []);
+
+  
   const fetchData = async () => {
     const response = await fetch('http://'+ip+':'+port+'/getChat', {
       method: 'POST',
@@ -40,16 +71,29 @@ const ChatAdmin = ({route, navigation}) => {
 
   }
 
-  useEffect(() => {
+
+const submitMessage = () => {
+
+  console.log(JSON.stringify({
+    alias: alias,
+    user: 'admin',
+    message: message,
+    }))
+
+
+  if(message!=''){
+
+    ws.send( 
+      [alias, 'admin', message]
+      
+    )
     fetchData();
-  }, []);
+    setMessage('');
 
+  }
+}
 
-
-  const[message, setMessage] = useState('')
-  //const[refreshList, setRefreshList] = useState(false);
-
-
+  // Send message to server a save in database with post request (deprecated)
   const sendMessage = async () => {
 
         if(message!=''){
@@ -72,6 +116,8 @@ const ChatAdmin = ({route, navigation}) => {
       setMessage('')
     }
   }
+
+
   
       return(
 
@@ -95,7 +141,7 @@ const ChatAdmin = ({route, navigation}) => {
             }
                    
 
-            <ChatTextInput ph={'Escriba su consulta'} val={message} setVal={setMessage} onPress={sendMessage}/>
+            <ChatTextInput ph={'Escriba su consulta'} val={message} setVal={setMessage} onPress={submitMessage}/>
   
           </SafeAreaView>
 

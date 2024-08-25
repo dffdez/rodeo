@@ -176,21 +176,8 @@ const ProfileAdmin = ({navigation}) => {
         </Modal>
 
 
-      {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-      {data &&
-      
-        <FlatList 
-        data={data} 
-        renderItem={({item}) => 
-          <TouchableOpacity style={styles.listWrapper} onPress={() => userInfo(item[0])}>
-            <Text style={styles.row}>{item}</Text>
-          </TouchableOpacity> 
-        } 
-        />
-      }
-
-      <ButtonAppSecondary title={'Gestión de usuarios'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
+      <ButtonAppSecondary title={'Gestión de usuarios'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('UserManagement')}/>
 
       <ButtonAppSecondary title={'Configuración de semáforo'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Stoplighconfig')}/>
 

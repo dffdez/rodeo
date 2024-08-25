@@ -22,6 +22,7 @@ import BlogAdmin from '../screens/BlogAdmin';
 import ChatIndex from './../screens/ChatIndex';
 import ChatAdmin from '../screens/ChatAdmin';
 import Stoplighconfig from '../screens/Admin/StoplightConfig';
+import UserManagement from '../screens/Admin/UsersManagement';
 
 
 
@@ -91,9 +92,9 @@ const TrackUserNav = () => {
 
 const ChatNav = () => {
     return(
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="ChatIndex" component={ChatIndex} />
-            <Stack.Screen name="ChatAdmin" component={ChatAdmin} />
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="ChatIndex" component={ChatIndex} options={{headerTitle: "Consultas"}} />
+            <Stack.Screen name="ChatAdmin" component={ChatAdmin} options={{headerTitle: "Consultas"}}/>
         </Stack.Navigator>
     )
 }
@@ -103,6 +104,7 @@ const ProfileNav = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="ProfileAdmin" component={ProfileAdmin} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="UserManagement" component={UserManagement} />
             <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} />
         </Stack.Navigator>
     )
