@@ -49,10 +49,12 @@ const BlogAdmin = ({navigation}) => {
           //extraData={refreshList}
 
           renderItem={({item}) => 
-            <TouchableOpacity style={styles.listWrapper}> 
+            <TouchableOpacity style={styles.listWrapper}>  
               <Text style={styles.title}>{item[0]}</Text>
+              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0]}} style={styles.imageblog} />
+
               <Text style={styles.article}>{item[1]}</Text>
-            </TouchableOpacity> 
+            </TouchableOpacity>
           }
           />
 
@@ -149,8 +151,9 @@ const BlogAdmin = ({navigation}) => {
       //flex: 1,
       marginBottom: 10,
       fontSize: 20,
-      fontStyle: 'italic',
-      paddingHorizontal: 10,
+      fontWeight: 'bold',
+      paddingHorizontal: 20,
+      
     },
 
     article: {
@@ -158,7 +161,15 @@ const BlogAdmin = ({navigation}) => {
       //flex: 1,
       marginBottom: 40,
       fontSize: 15,
-      paddingHorizontal: 10,
+      paddingHorizontal: 20,
+    },
+
+    imageblog: {
+      alignSelf: 'center',
+      marginTop: 10,
+      marginBottom: 10,
+      width: 350,
+      height: 300,
     },
 
 

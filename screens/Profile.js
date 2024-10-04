@@ -169,7 +169,6 @@ const Profile = ({navigation}) => {
 
                   <View style={styles.modalview}>
 
-                    <Text>{usermessage}</Text>
                     <TextInputAppSecondary ph='Contraseña' val={password} setVal={setPassword} secure={true} style={textStylePassword}/>
                     <TextInputAppSecondary ph='Confirmar contraseña' val={passwordcheck} setVal={setPasswordCheck} secure={true} style={textStylePassword}/>
                     <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => changePassword()}/>

@@ -16,12 +16,17 @@
     "axios": "^1.6.1",
     "axios-auth-refresh": "^3.3.6",
     "expo": "~51.0.22",
+    "expo-image-picker": "^15.0.7",
+    "expo-notifications": "~0.28.16",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-native": "^0.74.3",
     "react-native-color-picker": "^0.6.0",
+    "react-native-image-picker": "^7.1.2",
     "react-native-keychain": "^8.1.2",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "expo-constants": "~16.0.2",
+    "expo-device": "~6.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

@@ -34,7 +34,7 @@ const TrackingAdmin = ({navigation}) => {
 
   const changeSelector = () => {
     if (acselector == 'Acción'){
-      setSelector('Crypto')
+      setSelector('Criptomoneda')
     }
     else{
       setSelector('Acción')
@@ -68,7 +68,7 @@ const TrackingAdmin = ({navigation}) => {
 
   const newStock = async () => {
 
-    if (symbol!=''){
+    if (symbol != '' || name != ''){
 
         await fetch('http://'+ip+':'+port+'/newStock', {
           method: 'POST',
@@ -77,6 +77,7 @@ const TrackingAdmin = ({navigation}) => {
           },
           body: JSON.stringify({
               symbol: symbol,
+              name: name,
               type: acselector,
           }),
       });
@@ -84,6 +85,8 @@ const TrackingAdmin = ({navigation}) => {
       fetchData();
 
       setSymbol('')
+      setName('')
+
       setModalVisible(false)
 
     }
@@ -147,7 +150,9 @@ const TrackingAdmin = ({navigation}) => {
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                   <View style={styles.modalview}>
 
-       <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Acción/Crypto" />
+                      <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Símbolo" />
+                      <TextInput value={name} style={styles.inputTitle} onChangeText={setName} placeholder="Nombre" />
+
                       <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={acselector} onPress={() => changeSelector()}/>
 
                       <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Añadir'} onPress={() => newStock()}/>
@@ -320,17 +325,18 @@ const TrackingAdmin = ({navigation}) => {
 
     inputTitle: {
       fontSize: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 50,
-        width: '85%',
-        borderColor: 'grey',
-        borderWidth: 1,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        paddingLeft: '4%',
-        paddingRight: '4%',
-        marginStart: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 50,
+      width: '85%',
+      borderColor: 'grey',
+      borderWidth: 1,
+      borderRadius: 10,
+      backgroundColor: 'white',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      marginStart: 5,
+      marginTop:20,
 
     },
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, FlatList, SafeAreaView, Image, Modal, KeyboardAvoidingView, TouchableWithoutFeedback, Platform} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 import TextInputApp from '../components/TextInputApp';
 import ButtonApp from '../components/ButtonApp';
@@ -17,10 +18,11 @@ const BlogAdmin = ({navigation}) => {
 
   const[title, setTitle] = useState('')
   const[message, setMessage] = useState('')
+  const [selectedImage, setSelectImage] = useState(null);
+  const [isSelectedImage, setIsSelectedImage] = useState(false);
+
   const[modalVisible, setModalVisible] = useState(false);
   const[modalEditVisible, setModalEditVisible] = useState(false);
-
-
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,27 @@ const BlogAdmin = ({navigation}) => {
           }),
       });
 
+      if(isSelectedImage){
+
+        setIsSelectedImage(false)
+
+        const formData = new FormData();
+        formData.append(
+          'image',
+          {
+            uri: selectedImage,
+            name: title+'.jpg',
+            type: 'image/jpg',
+          }
+        )
+        await fetch('http://'+ip+':'+port+'/newImage', {
+          method: 'POST',
+          body: formData,
+  
+      });
+  
+      }
+
       fetchData();
 
       setTitle('')
@@ -62,6 +85,24 @@ const BlogAdmin = ({navigation}) => {
       setModalVisible(false)
 
     }
+  }
+
+
+  const selectImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({mediaTypes: ImagePicker.MediaTypeOptions.Images });
+
+    if(!result.canceled){
+      setSelectImage(result.assets[0].uri)
+      console.log("Seleccionado")
+      setIsSelectedImage(true)
+
+     // newPost_image_mod()
+
+    } else {
+      console.log("No seleccionado")
+    }
+
+
   }
 
   const editPost = (title, article) => {
@@ -87,7 +128,7 @@ const BlogAdmin = ({navigation}) => {
       },
       body: JSON.stringify({
           title: title,
-          message: message,
+          message: article,
       }),
   });
 
@@ -143,6 +184,7 @@ const BlogAdmin = ({navigation}) => {
                         <TextInput value={title} style={styles.inputTitle} onChangeText={setTitle} placeholder="Título" />
                         <TextInput value={message} style={styles.inputText} onChangeText={setMessage} placeholder="Texto de la publicación" multiline={true}/>
 
+                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Añadir imagen'} onPress={() => selectImage() }/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Publicar'} onPress={() => newPost()}/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => setModalVisible(false) }/>
 
@@ -198,6 +240,8 @@ const BlogAdmin = ({navigation}) => {
           renderItem={({item}) => 
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0], item[1])}> 
               <Text style={styles.title}>{item[0]}</Text>
+              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0]}} style={styles.imageblog} />
+
               <Text style={styles.article}>{item[1]}</Text>
             </TouchableOpacity> 
           }
@@ -298,8 +342,8 @@ const BlogAdmin = ({navigation}) => {
       //flex: 1,
       marginBottom: 10,
       fontSize: 20,
-      fontStyle: 'italic',
-      paddingHorizontal: 10,
+      fontWeight: 'bold',
+      paddingHorizontal: 20,
       
     },
 
@@ -308,7 +352,15 @@ const BlogAdmin = ({navigation}) => {
       //flex: 1,
       marginBottom: 40,
       fontSize: 15,
-      paddingHorizontal: 10,
+      paddingHorizontal: 20,
+    },
+
+    imageblog: {
+      alignSelf: 'center',
+      marginTop: 10,
+      marginBottom: 10,
+      width: 350,
+      height: 300,
     },
 
     button: {
