@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { io } from 'socket.io-client'
 
 import StarButton from '../components/StarButton';
 import favstar from '../assets/favstar.png';
@@ -16,6 +17,8 @@ import rodeoserver from '../serverconn_conf/ServerAddress'
 const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
+//Poner esto aquí inicia la conexión al entrar en la app
+const ws = io('ws://'+ip+':'+port+'/stocks')
 
 
 const Tracking = ({navigation}) => {
@@ -26,6 +29,11 @@ const Tracking = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const [viewselector, setView] = useState('Mostrar todo');
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [price, setPrice] = useState('');
+  const [stocks, setStocks] = useState({});
+  //const diccionario = {}
+
 
 
   const[symbol, setSymbol] = useState('');
@@ -45,6 +53,58 @@ const Tracking = ({navigation}) => {
   }
 
 
+  //Funciones base websockets
+  useEffect(() => {
+
+    //Cargar datos
+    fetchData();
+
+    ws.on('connect', () => {
+      console.log("Conectado")
+
+      ws.emit('join', getUsername())
+    });
+
+    ws.on('message', (data) => {
+
+      //Actualización de los precios
+
+      //Copy of stocks
+      const updatedStocks = {...stocks}
+
+      //Updated changes on copy
+      for (const key in stocks) {
+        updatedStocks[key] = data[key]['price']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+      }
+      //Set changes
+      setStocks(updatedStocks)
+
+      console.log(data)
+
+
+      //setPrice(data[0]["AAPL"])
+      //
+
+      
+      //fetchData();
+    });
+
+    ws.on('close', () => {
+      console.log("Nuevo mensaje")
+
+      //console.log(data.data)
+    });
+
+    ws.on('error', (data) => {
+      console.log("Nuevo mensaje")
+
+      //console.log(data.data)
+    });
+
+
+  }, []);
+
+
   const fetchData = async () => {
 
     const response = await fetch('http://'+ip+':'+port+'/getFavourites', {
@@ -59,14 +119,20 @@ const Tracking = ({navigation}) => {
 
     const data = await response.json();
     setData(data);
+
+    for (const item of data) {
+      stocks[item[0]] = 0;
+    }
+    //console.log(stocks)
+
     setLoading(false);
     
   }
 
-  useEffect(() => {
+ /*  useEffect(() => {
     fetchData();
   }, []);
-
+ */
 
   const infoStock = (symbol, name) => {
 
@@ -119,7 +185,7 @@ const Tracking = ({navigation}) => {
               <Text style={styles.symbol}>{item[0]}</Text>
               <Text style={styles.name}>{item[1]}</Text>
             </View>
-            <Text style={styles.row}>Precio</Text>
+            <Text style={styles.pricerow}>{stocks[item[0]]}</Text>
 
             <Stoplight style={styles.favrow}/> 
           </TouchableOpacity> 
@@ -196,6 +262,14 @@ const Tracking = ({navigation}) => {
       marginTop:20,
       fontSize: 15,
       //paddingHorizontal: 10,
+    },
+
+    pricerow: {
+      backgroundColor: '#fff',
+      flex: 1,
+      //marginBottom: 20,
+      marginTop:20,
+      fontSize: 16,
     },
 
     favrow: {

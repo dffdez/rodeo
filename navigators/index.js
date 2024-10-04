@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 //React navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import * as Notifications from 'expo-notifications'
+
 
 //screens
 import Login from './../screens/Login';
@@ -24,7 +27,9 @@ import ChatAdmin from '../screens/ChatAdmin';
 import Stoplighconfig from '../screens/Admin/StoplightConfig';
 import UserManagement from '../screens/Admin/UsersManagement';
 
-
+import rodeoserver from '../serverconn_conf/ServerAddress'
+const ip = rodeoserver.IP
+const port = rodeoserver.PORT
 
 
 //Authentication
@@ -34,13 +39,75 @@ import {useAuth} from '../context/AuthContext';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
+//Permite recibir notificaciones cuando la app está abierta
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 //TAB BAR after authentication
 const Home = () => {
 
     //Determinar si admin
     const { getIsAdmin } = useAuth(); //Solo puede ser llamado dentro de function
+    const { getUsername } = useAuth();
+
+
+    useEffect(() => {
+
+        registerForPushNotificationsAsync();
+
+    }, []);
+
+    //Push notifications
+    async function registerForPushNotificationsAsync() {
+        let token;
+
+        const{status: existingStatus} = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+            const {status} = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+    
+        if (finalStatus !== 'granted') {
+            alert('Error al activar las notificaciones');
+            return;
+        }
+
+        //ProjectId obtenido de Expo al crear nuevo proyecto
+        const projectId = "605e5af7-6932-44dc-8391-5e2a4976e615"
+        if (!projectId) {
+            console.log('Project ID not found');
+        }
+
+    
+        token = (await Notifications.getExpoPushTokenAsync({
+            projectId
+        })).data;
+
+
+        //Almacena el token en la base de datos
+        await fetch('http://'+ip+':'+port+'/setPushNotificationToken', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                alias: getUsername(),
+                token: token,
+            }),
+        });
+
+
+    
+        return token;
+        
+    }
 
     return(
     <Tab.Navigator screenOptions={{headerShown: false}}>
@@ -56,7 +123,7 @@ const Home = () => {
         ):(
             <>
                 <Tab.Screen name="Seguimiento" component={TrackUserNav} />
-                <Tab.Screen name="Blog" component={Blog} />
+                <Tab.Screen name="Blog" component={Blog}  options={{headerTitle: "Blog"}} />
                 <Tab.Screen name="Consultas" component={ChatUser} />
                 <Tab.Screen name="Perfil" component={Profile} />
             </>

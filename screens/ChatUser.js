@@ -94,7 +94,6 @@ const ChatAdmin = ({route, navigation}) => {
   
       ws.send( 
         [getUsername(), '0', message]
-        
       )
       fetchData();
       setMessage('');

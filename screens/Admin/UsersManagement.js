@@ -130,7 +130,7 @@ const UserManagement = ({navigation}) => {
       
           setModalVisible(true)
     
-          }
+        }
       
 
 
