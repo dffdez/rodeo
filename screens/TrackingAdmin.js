@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, TextInput, View, Platform, TouchableOpacity, Modal, SafeAreaView, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import { ColorPicker } from 'react-native-color-picker';
+import { FlatList, StyleSheet, Text, TextInput, View, Platform, TouchableOpacity, Modal, SafeAreaView, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
 import Slider from '@react-native-community/slider';
+import { io } from 'socket.io-client'
+import * as ImagePicker from 'expo-image-picker';
+
+import SetStockIcon from '../components/SetStockIcon';
+import StockIcon from '../components/StockIcon';
 
 import TextInputApp from '../components/TextInputApp';
 import ButtonApp from '../components/ButtonApp';
@@ -14,6 +18,7 @@ import rodeoserver from '../serverconn_conf/ServerAddress'
 const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
+const ws = io('ws://'+ip+':'+port+'/stocks')
 
 
 const TrackingAdmin = ({navigation}) => {
@@ -28,8 +33,16 @@ const TrackingAdmin = ({navigation}) => {
   const[symbol, setSymbol] = useState('');
   const[name, setName] = useState('');
   const[acselector, setSelector] = useState('Acción');
-  const[voselector, setVisible] = useState('Oculto');
+  const[imageName, setImageName] = useState('');
 
+  const [stocks, setStocks] = useState({});
+  const [stoplight, setStoplight] = useState({});
+  const [datetime, setDatetime] = useState({});
+  const [change, setChange] = useState({});
+  const [percent, setPercent] = useState({});
+
+  const [selectedImage, setSelectImage] = useState(null);
+  const [isSelectedImage, setIsSelectedImage] = useState(false);
 
 
   const changeSelector = () => {
@@ -41,15 +54,62 @@ const TrackingAdmin = ({navigation}) => {
     }
   }
 
-  const changeVisible = () => {
-    if (voselector == 'Visible'){
-      setVisible('Oculto')
-    }
-    else{
-      setVisible('Visible')
-    }
 
-  }
+  //Funciones base websockets
+  useEffect(() => {
+
+    //Cargar datos
+    fetchData();
+
+    ws.on('connect', () => {
+      console.log("Conectado")
+
+      ws.emit('join', getUsername())
+    });
+
+    ws.on('message', (data) => {
+
+      //Actualización de los precios
+
+      //Copy of stocks
+      const updatedStocks = {...stocks}
+      const updatedStoplight = {...stoplight}
+      const updatedDatetime = {...datetime}
+      const updatedChange = {...change}
+      const updatedPercent = {...percent}
+
+      //Updated changes on copy
+      for (const key in stocks) {
+        updatedStocks[key] = data[key]['price']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedStoplight[key] = data[key]['state']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedDatetime[key] = data[key]['datetime']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedChange[key] = data[key]['change']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedPercent[key] = data[key]['percent_change']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+
+      }
+      //Set changes
+      setStocks(updatedStocks)
+      setStoplight(updatedStoplight)
+      setDatetime(updatedDatetime)
+      setChange(updatedChange)
+      setPercent(updatedPercent)
+
+    });
+
+    ws.on('close', () => {
+      console.log("Nuevo mensaje")
+
+      //console.log(data.data)
+    });
+
+    ws.on('error', (data) => {
+      console.log("Nuevo mensaje")
+
+      //console.log(data.data)
+    });
+
+
+  }, []);
 
 
   const fetchData = async () => {
@@ -57,6 +117,10 @@ const TrackingAdmin = ({navigation}) => {
 
     const data = await response.json();
     setData(data);
+
+    for (const item of data) {
+      stocks[item[0]] = 0;
+    }
     setLoading(false);
 
   }
@@ -68,7 +132,7 @@ const TrackingAdmin = ({navigation}) => {
 
   const newStock = async () => {
 
-    if (symbol != '' || name != ''){
+    if (symbol != '' || name != '' && isSelectedImage){
 
         await fetch('http://'+ip+':'+port+'/newStock', {
           method: 'POST',
@@ -82,12 +146,36 @@ const TrackingAdmin = ({navigation}) => {
           }),
       });
 
+      if(isSelectedImage == true){
+
+        setIsSelectedImage(false)
+
+        const formData = new FormData();
+        formData.append(
+          'image',
+          {
+            uri: selectedImage,
+            name: title+'.jpg',
+            type: 'image/jpg',
+          }
+        )
+        await fetch('http://'+ip+':'+port+'/newIconStock', {
+          method: 'POST',
+          body: formData,
+  
+      });
+
+    }
+
       fetchData();
 
       setSymbol('')
       setName('')
 
       setModalVisible(false)
+
+    } else {
+      Alert.alert('Información', 'Para añadir un nuevo valor debe incluir símbolo, nombre y seleccionar un icono.')
 
     }
   }
@@ -96,20 +184,27 @@ const TrackingAdmin = ({navigation}) => {
 
     setSymbol(symbol)
     setName(name)
+    setImageName(symbol)
     setModalEditVisible(true)
 
   }
 
   const dismissStock = () => {
+    setModalVisible(false)
+
     setSymbol('')
     setName('')
-    setModalVisible(false)
+    setSelectImage(null)
+    setIsSelectedImage(false)
+
   }
 
   const dismissEditStock = () => {
+    setModalEditVisible(false)
     setSymbol('')
     setName('')
-    setModalEditVisible(false)
+    setImageName('')
+    
   }
 
 
@@ -132,6 +227,19 @@ const TrackingAdmin = ({navigation}) => {
 
   }
 
+  const selectImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({mediaTypes: ImagePicker.MediaTypeOptions.Images });
+
+    if(!result.canceled){
+      setSelectImage(result.assets[0].uri)
+      console.log("Seleccionado")
+      setIsSelectedImage(true)
+
+    } else {
+      console.log("No seleccionado")
+    }
+  }
+
 
 
 
@@ -146,9 +254,11 @@ const TrackingAdmin = ({navigation}) => {
       <SafeAreaView style={styles.modalcontainer}> 
 
         
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} > 
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                   <View style={styles.modalview}>
+
+                      <SetStockIcon ok={isSelectedImage} onpress={() => selectImage()}/>
 
                       <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Símbolo" />
                       <TextInput value={name} style={styles.inputTitle} onChangeText={setName} placeholder="Nombre" />
@@ -167,31 +277,35 @@ const TrackingAdmin = ({navigation}) => {
       </Modal>
 
 
-      <Modal animationType="slide" transparent={true} visible={modalEditVisible}>
+              <Modal animationType="slide" transparent={true} visible={modalEditVisible}>
 
-      <SafeAreaView style={styles.modalcontainer}> 
+          <SafeAreaView style={styles.modalcontainer}> 
 
-        
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                  <View style={styles.modalview}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modalview}>
+                        
+                        <StockIcon name={imageName}/>
+                        <Text style={styles.editSymbol}>{symbol}</Text>
+                        <Text style={styles.editName}>{name}</Text>
+                        
+                        <Text style={styles.infoStockTitle}>Fecha de cambio</Text>
+                        <Text style={styles.infoStock}>{datetime[symbol]}</Text>
 
-                      <Text style={styles.editSymbol}>{symbol}</Text>
-                      <Text style={styles.editName}>{name}</Text>
+                        <Text style={styles.infoStockTitle}>Cambio 1min</Text>
+                        <Text style={styles.infoStock}>{change[symbol]}</Text>
 
-                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={voselector} onPress={() => changeVisible()}/>
+                        <Text style={styles.infoStockTitle}>%Cambio 1min</Text>
+                        <Text style={styles.infoStockBottom}>{percent[symbol]}</Text>
 
+                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalEditVisible(false) }/>
 
-                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deleteStock(symbol) }/>
-                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => dismissEditStock() }/>
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
 
-
-                  </View>
-              </TouchableWithoutFeedback>
-          </KeyboardAvoidingView>
-
-      </SafeAreaView>
-      </Modal>
+        </SafeAreaView>
+        </Modal>
 
 
 
@@ -211,9 +325,9 @@ const TrackingAdmin = ({navigation}) => {
                 <Text style={styles.symbol}>{item[0]}</Text>
                 <Text style={styles.name}>{item[1]}</Text>
               </View>
-              <Text style={styles.row}>Precio</Text>
+              <Text style={styles.pricerow}>{stocks[item[0]]}</Text>
 
-            <Stoplight style={styles.favrow}/> 
+            <Stoplight style={styles.favrow} state={stoplight[item[0]]}/> 
 
 
 
@@ -226,6 +340,9 @@ const TrackingAdmin = ({navigation}) => {
 
         <ButtonApp title={'Añadir a seguimiento'} onPress={() => setModalVisible(true)}/>
 
+        <View style={styles.emptyspace} />
+
+
 
         
       </SafeAreaView>
@@ -236,6 +353,11 @@ const TrackingAdmin = ({navigation}) => {
 
 
   const styles = StyleSheet.create({
+
+    emptyspace: {
+      padding: 10,
+    },
+
     container: {
       flex: 1,
       backgroundColor: '#fff',
@@ -276,7 +398,9 @@ const TrackingAdmin = ({navigation}) => {
     listWrapper: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      borderBottomWidth: 0.5,
+      //borderBottomWidth: 0.5,
+      alignItems: 'center',
+
     },
 
     row: {
@@ -288,12 +412,19 @@ const TrackingAdmin = ({navigation}) => {
       paddingHorizontal: 10,
     },
 
+    pricerow: {
+      backgroundColor: '#fff',
+      flex: 1,
+      //marginBottom: 20,
+      //marginTop:20,
+      fontSize: 17,
+      textAlignVertical: 'center',
+    },
+
     favrow: {
       backgroundColor: '#fff',
-      //flex: 1,
       marginBottom: 20,
       marginTop:20,
-      //fontSize: 15,
       paddingHorizontal: 10,
     },
 
@@ -386,6 +517,41 @@ const TrackingAdmin = ({navigation}) => {
       justifyContent: 'center',
       paddingLeft: '4%',
       paddingRight: '4%',
+      marginBottom: 40
+
+    },
+
+    infoStockTitle: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'black',
+      marginTop: 10,
+      marginBottom: 2
+    },
+
+    infoStock: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'grey',
+      marginBottom: 10,
+      //marginTop: 10
+    },
+
+    infoStockBottom: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'grey',
+      marginBottom: 10,
+      marginBottom: 40,
 
     },
 

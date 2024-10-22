@@ -1,5 +1,5 @@
 import React, { useState, createContext, useContext } from 'react';
-
+import * as SecureStore from 'expo-secure-store';
 
 const AuthContext = createContext(null);
 const {Provider} = AuthContext;
@@ -14,9 +14,9 @@ const AuthProvider = ({children}) => {
 
     //Almacena el estado 
     const [authState, setAuthState] = useState({
-        username: 'usuario1',
+        username: null,
         accessToken: null,
-        authenticated: true,
+        authenticated: false,
         admin: false,
     });
 
@@ -42,6 +42,9 @@ const AuthProvider = ({children}) => {
 
                 const data = await response.json();
                 const accessToken = data.access_token;
+                storeToken(accessToken, username)
+
+                //console.log(data)
                 
 
                 if(data.admin == 'admin'){
@@ -123,8 +126,11 @@ const AuthProvider = ({children}) => {
 
         // Eliminar accessToken almacenado
         // Envia a pantalla de login
+        await SecureStore.deleteItemAsync('jwtToken')
+        await SecureStore.deleteItemAsync('username')
+        await SecureStore.deleteItemAsync('password')
 
-
+        
         setAuthState({
             username:null,
             accessToken: null,
@@ -135,10 +141,56 @@ const AuthProvider = ({children}) => {
         
     };
 
+    const storeToken = async (token, user) => {
+        try {
+            //console.log('Store token', token)
+            await SecureStore.setItemAsync('jwtToken', token)
+            await SecureStore.setItemAsync('user', user)
+        } catch (error) {
+            console.log('Error storing JWT', error)
+        }
+
+    }
 
     //Devuelve el token de acceso
-    const getAccessToken = () => {
-        return authState.accessToken;
+    const getToken = async () => {
+        try {
+            let result = await SecureStore.getItemAsync('jwtToken')
+            //console.log('Token obtenido', result)
+            if (result) {
+                return result
+            } else {
+                console.log('No JWT stored')
+            }
+        } catch (error) {
+            console.log('Error getting JWT', error)
+        }
+    };
+
+    //Devuelve usuario y token
+    const getSession = async () => {
+        try {
+            let accessToken = await SecureStore.getItemAsync('jwtToken')
+            let username = await SecureStore.getItemAsync('username')
+            let password = await SecureStore.getItemAsync('password')
+
+            //console.log('Probado login automatico')
+            //console.log(password)
+
+            //console.log('Token obtenido', result)
+            if (accessToken && username && password) {
+
+                login(username, password)
+
+                //console.log('Probado login automatico')
+                
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.log('Error getting JWT', error)
+        }
     };
 
     //Devuelve el nombre de usuario
@@ -163,7 +215,7 @@ const AuthProvider = ({children}) => {
 
 
     return (
-        <Provider value={{authState, getAccessToken, login, logout, signup, getIsSignedIn, getIsAdmin, getUsername}}>
+        <Provider value={{authState, getToken, getSession, login, logout, signup, getIsSignedIn, getIsAdmin, getUsername}}>
             {children}
         </Provider>
     );

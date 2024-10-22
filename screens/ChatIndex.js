@@ -6,6 +6,7 @@ import { FlatList, StyleSheet, Text, TextInput, View, Button, TouchableOpacity, 
 import Logo from '../assets/adaptive-icon.png';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
@@ -19,6 +20,9 @@ const ChatIndex = ({navigation}) => {
   const [data, setData] = useState([]);
   const [doneChat, setDoneChat] = useState([]);
   const[modalVisible, setModalVisible] = useState(false);
+
+  const[selectedChat, setSelectChat] = useState('');
+
 
 
   const [loading, setLoading] = useState(true);
@@ -34,6 +38,97 @@ const ChatIndex = ({navigation}) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+
+  const selectUserChat = async (alias) => {
+    setSelectChat(alias);
+    setModalVisible(true);
+  }
+
+  
+
+  const getStoredChat = async () => {
+
+    const response = await fetch('http://'+ip+':'+port+'/getStoredChat');
+
+    const data = await response.json();
+    setData(data);
+
+    setLoading(false);
+
+  }
+
+
+  const getPendingChat = async () => {
+
+    const response = await fetch('http://'+ip+':'+port+'/getPendingChats');
+
+    const data = await response.json();
+    setData(data);
+    console.log(data)
+
+    setLoading(false);
+
+  }
+
+  const setStoreChat = async () => {
+    setLoading(true);
+
+    await fetch('http://'+ip+':'+port+'/setStoredChat', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          alias: selectedChat,
+      }),
+  });
+
+    setLoading(false);
+    fetchData();
+    setModalVisible(false);
+
+  }
+
+
+  const setPendingChat = async () => {
+    setLoading(true);
+
+    await fetch('http://'+ip+':'+port+'/setPendingChat', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          alias: selectedChat,
+      }),
+  });
+
+    setLoading(false);
+    fetchData();
+    setModalVisible(false);
+
+  }
+
+  const deleteChat = async (alias) => {
+    setLoading(true);
+
+    await fetch('http://'+ip+':'+port+'/deleteChat', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          alias: alias,
+      }),
+  });
+
+    setLoading(false);
+    fetchData();
+    setModalVisible(false);
+
+
+  }
 
 
 
@@ -58,15 +153,14 @@ const ChatIndex = ({navigation}) => {
        
 
       
-                  <View>
+        <View>
+          
+            <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Marcar como respondido'} onPress={() => setStoreChat()}/>
+            <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Marcar como pendiente'} onPress={() => setPendingChat()}/>
+            <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deleteChat()}/>
+            <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalVisible(false) }/>
 
-
-                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Marcar como respondido'} onPress={() => fetchData()}/>
-                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Eliminar'} onPress={() => fetchData()}/>
-                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalVisible(false) }/>
-
-
-                  </View>
+        </View>
 
 
       </SafeAreaView>
@@ -78,15 +172,28 @@ const ChatIndex = ({navigation}) => {
       {data &&
 
       <View>
-        <TouchableOpacity style={styles.listWrapperDone} onPress={() => navigation.navigate('ChatAdmin', {alias: item[0]})} onLongPress={() => setModalVisible(true)}>
-          <Text style={styles.rowDone}>Archivados</Text>
+        <TouchableOpacity style={styles.listWrapperDone}>
+
+          <TouchableOpacity style={styles.rowIndex} onPress={() => fetchData()} >
+            <Text style={styles.rowDone}>Todos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.rowIndex} onPress={() => getPendingChat()} >
+            <Text style={styles.rowDone}>Pendientes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.rowIndex} onPress={() => getStoredChat()} >
+            <Text style={styles.rowDone}>Archivados</Text>
+          </TouchableOpacity>
+
         </TouchableOpacity> 
 
         <FlatList 
         style={{height: '50%'}}
         data={data} 
         renderItem={({item}) => 
-          <TouchableOpacity style={styles.listWrapper} onPress={() => navigation.navigate('ChatAdmin', {alias: item[0]})} onLongPress={() => setModalVisible(true)}>
+          <TouchableOpacity style={styles.listWrapper} onPress={() => navigation.navigate('ChatAdmin', {alias: item[0]})} onLongPress={() => selectUserChat(item[0])}>
+            <Ionicons name={'person'} size={'200'} style={styles.row} />
             <Text style={styles.row}>{item}</Text>
           </TouchableOpacity> 
         } 
@@ -134,21 +241,33 @@ const ChatIndex = ({navigation}) => {
 
     row: {
       backgroundColor: '#fff',
-      flex: 1,
+      //flex: 1,
       marginBottom: 20,
       marginTop:20,
-      fontSize: 15,
-      paddingHorizontal: 10,
+      fontSize: 20,
+      paddingHorizontal: 20,
+      verticalAlign: 'middle'
     },
 
     rowDone: {
       backgroundColor: '#fff',
-      flex: 1,
+      //flex: 1,
       marginBottom: 20,
       marginTop:20,
       paddingHorizontal: 10,
       fontSize: 15,
       fontWeight: 'bold',
+    },
+
+    rowIndex: {
+      backgroundColor: '#fff',
+      flex: 1,
+      marginBottom: 5,
+      marginTop:5,
+      paddingHorizontal: 10,
+      fontSize: 15,
+      fontWeight: 'bold',
+      alignItems: 'center'
     },
 
     loading: {

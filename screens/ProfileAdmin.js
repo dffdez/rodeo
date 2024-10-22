@@ -176,10 +176,13 @@ const ProfileAdmin = ({navigation}) => {
         </Modal>
 
 
+        <ButtonAppSecondary title={'Configurar referencias'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('ReferenceConfig')}/>
+
+      <ButtonAppSecondary title={'Configuración de semáforo'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Stoplighconfig')}/>
 
       <ButtonAppSecondary title={'Gestión de usuarios'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('UserManagement')}/>
 
-      <ButtonAppSecondary title={'Configuración de semáforo'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Stoplighconfig')}/>
+      <ButtonAppSecondary title={'Crear administrador'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('SignupAdmin')}/>
 
       <ButtonAppSecondary title={'Perfil'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
         

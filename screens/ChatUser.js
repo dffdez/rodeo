@@ -45,7 +45,7 @@ const ChatAdmin = ({route, navigation}) => {
       });
   
       ws.on('message', (data) => {
-        
+        console.log('user', data)
         fetchData();
       });
   

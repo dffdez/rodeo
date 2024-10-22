@@ -6,6 +6,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import * as Notifications from 'expo-notifications'
+import { StyleSheet, Text, TextInput, View, Button, Platform, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 //screens
@@ -26,6 +29,9 @@ import ChatIndex from './../screens/ChatIndex';
 import ChatAdmin from '../screens/ChatAdmin';
 import Stoplighconfig from '../screens/Admin/StoplightConfig';
 import UserManagement from '../screens/Admin/UsersManagement';
+import ReferenceConfig from '../screens/Admin/ReferenceConfig';
+import TrackConfRef from '../screens/Admin/TrackConfRef';
+
 
 import rodeoserver from '../serverconn_conf/ServerAddress'
 const ip = rodeoserver.IP
@@ -34,6 +40,7 @@ const port = rodeoserver.PORT
 
 //Authentication
 import {useAuth} from '../context/AuthContext';
+import SignupAdmin from '../screens/Admin/SignupAdmin';
 
 
 const Stack = createStackNavigator();
@@ -110,22 +117,51 @@ const Home = () => {
     }
 
     return(
-    <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Seguimiento') {
+              iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+            } else if (route.name === 'Blog') {
+              iconName = focused ? 'newspaper' : 'newspaper-outline';
+            } else if (route.name === 'Consultas') {
+                iconName = focused ? 'chatbubble' : 'chatbubble-outline';
+            } else if (route.name === 'Perfil') {
+                iconName = focused ? 'settings' : 'settings-outline';
+            } else if (route.name === 'Configuración') {
+                iconName = focused ? 'settings' : 'settings-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+          tabBarHideOnKeyboard: true,
+
+        })
+
+    
+    }
+
+      >
 
 
         {getIsAdmin() ? (
             <>
-                <Tab.Screen name="Seguimiento" component={TrackNav} />
-                <Tab.Screen name="Blog" component={BlogAdmin} />
-                <Tab.Screen name="Consultas" component={ChatNav} />
-                <Tab.Screen name="Perfil" component={ProfileNav} />
+                <Tab.Screen name="Seguimiento" component={TrackNav} options={{headerTitle: "Seguimiento", headerShown: true}}/>
+                <Tab.Screen name="Blog" component={BlogAdmin} options={{headerTitle: "Blog", headerShown: true }}/>
+                <Tab.Screen name="Consultas" component={ChatNav} options={{headerTitle: "Consultas", headerShown: false }}/>
+                <Tab.Screen name="Configuración" component={ProfileNav} options={{headerTitle: "Perfil", headerShown: false }}/>
             </>
         ):(
             <>
-                <Tab.Screen name="Seguimiento" component={TrackUserNav} />
-                <Tab.Screen name="Blog" component={Blog}  options={{headerTitle: "Blog"}} />
-                <Tab.Screen name="Consultas" component={ChatUser} />
-                <Tab.Screen name="Perfil" component={Profile} />
+                <Tab.Screen name="Seguimiento" component={TrackUserNav} options={{headerTitle: "Seguimiento", headerShown: true}}/>
+                <Tab.Screen name="Blog" component={Blog}  options={{headerTitle: "Blog", headerShown: true }} />
+                <Tab.Screen name="Consultas" component={ChatUser} options={{headerTitle: "Consultas", headerShown: true}}/>
+                <Tab.Screen name="Perfil" component={Profile} options={{headerTitle: "Perfil", headerShown: false }}/>
             </>
         )}
 
@@ -166,13 +202,38 @@ const ChatNav = () => {
     )
 }
 
+
+const BlogUserNav = () => {
+    return(
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="Blog" component={Blog} options={{headerTitle: "Blog"}} />
+            <Stack.Screen name="Video" component={Video} options={{headerTitle: "Blog"}}/>
+        </Stack.Navigator>
+    )
+}
+
+
+const BlogNav = () => {
+    return(
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="BlogAdmin" component={BlogAdmin} options={{headerTitle: "Blog"}} />
+            <Stack.Screen name="Video" component={Video} options={{headerTitle: "Blog"}}/>
+        </Stack.Navigator>
+    )
+}
+
 const ProfileNav = () => {
     return(
         <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="ProfileAdmin" component={ProfileAdmin} />
-            <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="UserManagement" component={UserManagement} />
-            <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} />
+            <Stack.Screen name="Profile" component={Profile} options={{headerTitle: "Perfil", headerShown: true}}/>
+            <Stack.Screen name="UserManagement" component={UserManagement} options={{headerTitle: "Gestión de usuarios", headerShown: true}}/>
+            <Stack.Screen name="SignupAdmin" component={SignupAdmin} options={{headerTitle: "Nuevo Administrador", headerShown: true}}/>
+            <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} options={{headerTitle: "Semáforo", headerShown: true}}/> 
+            <Stack.Screen name="ReferenceConfig" component={ReferenceConfig} options={{headerTitle: "Referencias", headerShown: true}}/> 
+            <Stack.Screen name="TrackConfRef" component={TrackConfRef} />
+
+
         </Stack.Navigator>
     )
 }
@@ -182,7 +243,13 @@ const ProfileNav = () => {
 //BUTTONS before authentication
 const Navigation = () => {
 
-    const {getIsSignedIn} = useAuth(); //Solo puede ser llamado dentro de function
+    const {getIsSignedIn, getSession} = useAuth(); //Solo puede ser llamado dentro de function
+
+
+    useEffect(() => {
+        getSession();
+    }, []);
+
 
 
       return(
