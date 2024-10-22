@@ -70,6 +70,7 @@ const Stoplighconfig = ({navigation}) => {
         }),
     });  
   
+    navigation.goBack()
     }
 
     // Save the selected button and show modal
@@ -232,22 +233,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight:'bold',
-    paddingLeft: '4%',
-    paddingRight: '4%',
-  },
-
-  alias: {
-    fontSize: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingLeft: '4%',
-    paddingRight: '4%',
-  },
-
-  email: {
-    fontSize: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingLeft: '4%',
     paddingRight: '4%',
   },

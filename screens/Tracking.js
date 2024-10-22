@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { io } from 'socket.io-client'
+import { useFocusEffect } from '@react-navigation/native';
 
 import StarButton from '../components/StarButton';
 import favstar from '../assets/favstar.png';
@@ -11,6 +12,7 @@ import Stoplight from '../components/Stoplight';
 
 import {useAuth} from '../context/AuthContext';
 
+import StockIcon from '../components/StockIcon';
 
 
 import rodeoserver from '../serverconn_conf/ServerAddress'
@@ -23,38 +25,46 @@ const ws = io('ws://'+ip+':'+port+'/stocks')
 
 const Tracking = ({navigation}) => {
 
-  const { getUsername } = useAuth();
+  const { getUsername, getToken } = useAuth();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewselector, setView] = useState('Mostrar todo');
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalInfoColor, setModalInfoColor] = useState(false);
 
-  const [price, setPrice] = useState('');
   const [stocks, setStocks] = useState({});
-  //const diccionario = {}
-
-
+  const [stoplight, setStoplight] = useState({});
+  const [datetime, setDatetime] = useState({});
+  const [change, setChange] = useState({});
+  const [percent, setPercent] = useState({});
+  const [imageName, setImageName] = useState('');
 
   const[symbol, setSymbol] = useState('');
   const[name, setName] = useState('');
 
-  
-  const changeView = () => {
-    if (viewselector == 'Mostrar todo'){
-      setView('Acciones')
-    }
-    if (viewselector == 'Acciones'){
-      setView('Cryptos')
-    }
-    if (viewselector == 'Cryptos'){
-      setView('Mostrar todo')
-    }
-  }
+  const [color, setColor] = useState([]);
+
+  const[neutral, setNeutral] = useState('');
+  const[ent_apx, setEntApx] = useState('');
+  const[ent_ent, setEntEnt] = useState('');
+  const[sal_tp_apx, setTpApx] = useState('');
+  const[sal_tp_sal, setTpSal] = useState('');
+  const[sal_sl_apx, setStApx] = useState('');
+  const[sal_sl_sal, setStSal] = useState('');
+
+
+
+
+  // Refresh when screen focus
+  useFocusEffect(useCallback(() => {fetchData();}, []));
 
 
   //Funciones base websockets
   useEffect(() => {
+
+    //JWT pruebas
+    pruebas();
 
     //Cargar datos
     fetchData();
@@ -71,22 +81,27 @@ const Tracking = ({navigation}) => {
 
       //Copy of stocks
       const updatedStocks = {...stocks}
+      const updatedStoplight = {...stoplight}
+      const updatedDatetime = {...datetime}
+      const updatedChange = {...change}
+      const updatedPercent = {...percent}
 
       //Updated changes on copy
       for (const key in stocks) {
         updatedStocks[key] = data[key]['price']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedStoplight[key] = data[key]['state']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedDatetime[key] = data[key]['datetime']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedChange[key] = data[key]['change']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+        updatedPercent[key] = data[key]['percent_change']                          // Cambiar 'AAPL' por key para obtener datos de peticion
+
       }
       //Set changes
       setStocks(updatedStocks)
+      setStoplight(updatedStoplight)
+      setDatetime(updatedDatetime)
+      setChange(updatedChange)
+      setPercent(updatedPercent)
 
-      console.log(data)
-
-
-      //setPrice(data[0]["AAPL"])
-      //
-
-      
-      //fetchData();
     });
 
     ws.on('close', () => {
@@ -107,9 +122,12 @@ const Tracking = ({navigation}) => {
 
   const fetchData = async () => {
 
+    let result = await getToken()
+
     const response = await fetch('http://'+ip+':'+port+'/getFavourites', {
       method: 'POST',
       headers: {
+          'Authorization': `Bearer ${result}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -129,21 +147,41 @@ const Tracking = ({navigation}) => {
     
   }
 
- /*  useEffect(() => {
-    fetchData();
-  }, []);
- */
-
   const infoStock = (symbol, name) => {
 
     setSymbol(symbol)
     setName(name)
+    setImageName(symbol)
     setModalVisible(true)
+  }
+
+
+  const infoColor= () => {
+    getSemaforo()
+    setModalInfoColor(true)
+  }
+
+  const getSemaforo = async () => {
+
+    const response = await fetch('http://'+ip+':'+port+'/getStoplight')
+
+    const data = await response.json();
+    setColor(data);
+    setLoading(false);   
+    
+    setNeutral(color[0])
+    setEntApx(color[1])
+    setEntEnt(color[2])
+    setTpApx(color[3])
+    setTpSal(color[4])
+    setStApx(color[5])
+    setStSal(color[6])
 
   }
 
 
       return(
+
     <SafeAreaView style={styles.container}>
 
         <Modal animationType="slide" transparent={true} visible={modalVisible}>
@@ -153,11 +191,63 @@ const Tracking = ({navigation}) => {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.modalview}>
-
+                        
+                        <StockIcon name={imageName}/>
                         <Text style={styles.editSymbol}>{symbol}</Text>
                         <Text style={styles.editName}>{name}</Text>
+                        
+                        <Text style={styles.infoStockTitle}>Fecha de cambio</Text>
+                        <Text style={styles.infoStock}>{datetime[symbol]}</Text>
+
+                        <Text style={styles.infoStockTitle}>Cambio 1min</Text>
+                        <Text style={styles.infoStock}>{change[symbol]}</Text>
+
+                        <Text style={styles.infoStockTitle}>%Cambio 1min</Text>
+                        <Text style={styles.infoStockBottom}>{percent[symbol]}</Text>
 
                         <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalVisible(false) }/>
+
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+
+        </SafeAreaView>
+        </Modal>
+
+
+        <Modal animationType="slide" transparent={true} visible={modalInfoColor}>
+
+          <SafeAreaView style={styles.modalcontainer}> 
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modalview}>
+
+                      <View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Neutro</Text>
+                        <Stoplight style={styles.favrow} state={neutral}/> 
+                      </View><View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Entrada aproximación</Text>
+                        <Stoplight style={styles.favrow} state={ent_apx}/> 
+                      </View><View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Entrada</Text>
+                        <Stoplight style={styles.favrow} state={ent_ent}/> 
+                      </View><View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Salida 'take profit' aproximación</Text>
+                        <Stoplight style={styles.favrow} state={sal_tp_apx}/> 
+                      </View><View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Salida 'take profit'</Text>
+                        <Stoplight style={styles.favrow} state={sal_tp_sal}/> 
+                      </View><View style={styles.listWrapper}>
+                        <Text style={styles.infoStockTitle}>Salida 'stop loss' aproximación</Text>
+                        <Stoplight style={styles.favrow} state={sal_sl_apx}/>
+                      </View><View style={styles.listWrapper}> 
+                        <Text style={styles.infoStockTitle}>Salida 'stop loss'</Text>
+                        <Stoplight style={styles.favrow} state={sal_sl_sal}/> 
+                      </View>
+
+
+                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalInfoColor(false) }/>
 
                     </View>
                 </TouchableWithoutFeedback>
@@ -187,7 +277,7 @@ const Tracking = ({navigation}) => {
             </View>
             <Text style={styles.pricerow}>{stocks[item[0]]}</Text>
 
-            <Stoplight style={styles.favrow}/> 
+            <Stoplight style={styles.favrow} state={stoplight[item[0]]} onpress={() => infoColor(true)}/> 
           </TouchableOpacity> 
         }
         />
@@ -203,7 +293,8 @@ const Tracking = ({navigation}) => {
 
         
       </SafeAreaView>
-  
+ 
+
       );
   };
   export default Tracking;
@@ -252,6 +343,7 @@ const Tracking = ({navigation}) => {
       flexWrap: 'wrap',
       //borderBottomWidth: 0.5,
       //borderTopWidth: 0.5,
+      alignItems: 'center',
 
     },
 
@@ -268,8 +360,9 @@ const Tracking = ({navigation}) => {
       backgroundColor: '#fff',
       flex: 1,
       //marginBottom: 20,
-      marginTop:20,
-      fontSize: 16,
+      //marginTop:20,
+      fontSize: 17,
+      textAlignVertical: 'center',
     },
 
     favrow: {
@@ -346,6 +439,42 @@ const Tracking = ({navigation}) => {
       justifyContent: 'center',
       paddingLeft: '4%',
       paddingRight: '4%',
+      color: 'grey',
+      marginBottom: 30
+
+    },
+
+    infoStockTitle: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'black',
+      marginTop: 10,
+      marginBottom: 2
+    },
+
+    infoStock: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'grey',
+      marginBottom: 10,
+      //marginTop: 10
+    },
+
+    infoStockBottom: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'grey',
+      marginBottom: 10,
+      marginBottom: 40,
 
     },
 

@@ -4,25 +4,21 @@ import {useAuth} from '../context/AuthContext';
 
 
 
-const Stoplight = ({style, state}) => {
+const Stoplight = ({style, state, onpress}) => {
     
 
 
-    const changeFavourite = async (symbol) => {
-        if (fvselector == nofavstar ){
-            setFavStock(favstar)
-            setFavourite(symbol)
-        }
-        if (fvselector == favstar){
-          setFavStock(nofavstar)
-          deleteFavourite(symbol)
-        }
-    }
-
   return (
 
-    <TouchableOpacity style={style}>
-        <TouchableOpacity style={styles.stoplight} />
+    <TouchableOpacity style={style} >
+        <TouchableOpacity onPress={onpress} style={{
+          alignSelf: 'center',
+          justifyContent: 'center',
+          width: 40,
+          height: 40,
+          backgroundColor: state,
+          borderRadius: 10
+      }} />
     </TouchableOpacity> 
 
   )

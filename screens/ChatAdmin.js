@@ -38,6 +38,7 @@ const ChatAdmin = ({route, navigation}) => {
     });
 
     ws.on('message', (data) => {
+      console.log('admin', data)
       fetchData();
     });
 
@@ -92,31 +93,6 @@ const submitMessage = () => {
 
   }
 }
-
-  // Send message to server a save in database with post request (deprecated)
-  const sendMessage = async () => {
-
-        if(message!=''){
-
-          await fetch('http://'+ip+':'+port+'/sendMessage', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              alias: alias,
-              user: 'admin',
-              message: message,
-          }),
-      });
-
-      fetchData();
-
-      //setRefreshList(!refreshList)
-      setMessage('')
-    }
-  }
-
 
   
       return(
