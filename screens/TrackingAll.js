@@ -26,7 +26,8 @@ const ws = io('ws://'+ip+':'+port+'/stocks')
 
 const TrackingAll = ({navigation}) => {
 
-  const { getUsername } = useAuth();
+  const { getUsername, jwtToken} = useAuth();
+
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,6 +125,7 @@ const TrackingAll = ({navigation}) => {
     const response = await fetch('http://'+ip+':'+port+'/getStocksFav', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -149,6 +151,7 @@ const TrackingAll = ({navigation}) => {
     const response = await fetch('http://'+ip+':'+port+'/'+url, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({

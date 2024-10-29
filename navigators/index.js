@@ -60,12 +60,15 @@ const Home = () => {
 
     //Determinar si admin
     const { getIsAdmin } = useAuth(); //Solo puede ser llamado dentro de function
-    const { getUsername } = useAuth();
+    const { getUsername, ws, wsChat } = useAuth();
+    const { jwtToken } = useAuth(null);
 
-
+  
     useEffect(() => {
 
         registerForPushNotificationsAsync();
+        ws.emit('join', getUsername())
+        wsChat.emit('join', getUsername())  
 
     }, []);
 
@@ -102,6 +105,7 @@ const Home = () => {
         await fetch('http://'+ip+':'+port+'/setPushNotificationToken', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -117,6 +121,8 @@ const Home = () => {
     }
 
     return(
+
+        
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -148,7 +154,7 @@ const Home = () => {
 
       >
 
-
+        
         {getIsAdmin() ? (
             <>
                 <Tab.Screen name="Seguimiento" component={TrackNav} options={{headerTitle: "Seguimiento", headerShown: true}}/>

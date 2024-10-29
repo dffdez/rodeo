@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, FlatList, SafeAreaView, Platform} from 'react-native';
 import { io } from 'socket.io-client'
+import { useFocusEffect } from '@react-navigation/native';
+
 
 
 import ChatBubble from '../components/ChatBubble';
 import ChatTextInput from '../components/ChatTextInput';
+
+import {useAuth} from '../context/AuthContext';
 
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
@@ -13,11 +17,13 @@ const ip = ADDRESS.IP
 const port = ADDRESS.PORT
 
 //Poner esto aquí inicia la conexión al entrar en la app
-const ws = io('ws://'+ip+':'+port+'/chat')
+/* const ws = io('ws://'+ip+':'+port+'/chat') */
 
 
 
 const ChatAdmin = ({route, navigation}) => {
+
+  const { getUsername, jwtToken, wsChat} = useAuth();
 
   const {alias} = route.params;
 
@@ -27,29 +33,36 @@ const ChatAdmin = ({route, navigation}) => {
   const[message, setMessage] = useState('')
 
 
+  useFocusEffect(
+    useCallback(() => {
+        // Cuando pantalla activa
+        wsChat.emit('join', alias)  
+
+        // Cuando abandona pantalla
+        return () => {
+          wsChat.emit('leave', alias)  
+          // Aquí puedes ejecutar cualquier código que necesites al abandonar la pantalla
+        };
+    }, [])
+);
+
   //Funciones base websockets
   useEffect(() => {
+
 
     //Cargar mensajes antiguos
     fetchData();
 
-    ws.on('connect', () => {
-      ws.emit('join', alias)
-    });
+    /* wsChat.on('connect', () => {
+      wsChat.emit('join', alias)
+    }); */
 
-    ws.on('message', (data) => {
+    wsChat.on('message', (data) => {
       console.log('admin', data)
       fetchData();
     });
 
-    ws.on('close', () => {
-      ws.emit('leave', alias)
 
-    });
-
-    ws.on('error', (data) => {
-      //console.log(data.data)
-    });
 
 
   }, []);
@@ -59,6 +72,7 @@ const ChatAdmin = ({route, navigation}) => {
     const response = await fetch('http://'+ip+':'+port+'/getChat', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -75,19 +89,16 @@ const ChatAdmin = ({route, navigation}) => {
 
 const submitMessage = () => {
 
-  console.log(JSON.stringify({
+/*   console.log(JSON.stringify({
     alias: alias,
     user: 'admin',
     message: message,
-    }))
+    })) */
 
 
   if(message!=''){
 
-    ws.send( 
-      [alias, 'admin', message]
-      
-    )
+    wsChat.send([alias, 'admin', message])
     fetchData();
     setMessage('');
 
@@ -101,7 +112,7 @@ const submitMessage = () => {
           <SafeAreaView style={styles.container}>
 
 
-            {loading && <Text style={styles.loading}>Cargando...</Text>}
+            {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
             {data &&
 
@@ -110,6 +121,7 @@ const submitMessage = () => {
               data={data} 
               renderItem={({item}) => <ChatBubble user={item[0]} value={item[1]}/>} 
               //extraData={refreshList}
+              inverted
               contentContainerStyle={styles.view}>
 
 
@@ -144,6 +156,8 @@ const submitMessage = () => {
     //justifyContent: 'flex-start',
     //marginTop: '20%',
     //marginLeft: '10%'
+    flexDirection:'column-reverse'
+
     },
 
     listWrapper: {

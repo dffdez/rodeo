@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, SafeAreaView } from 'react-native';
 
 import ButtonApp from '../components/ButtonApp';
+import {useAuth} from '../context/AuthContext';
 
 
 
@@ -13,6 +14,9 @@ const port = ADDRESS.PORT
 
 
 const TrackConf = ({route, navigation}) => {
+
+  const { getUsername, jwtToken} = useAuth();
+
 
   const {simbolo} = route.params;
   const {nombre} = route.params;
@@ -42,6 +46,7 @@ const TrackConf = ({route, navigation}) => {
     const response = await fetch('http://'+ip+':'+port+'/getLimits', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -85,6 +90,7 @@ const TrackConf = ({route, navigation}) => {
     await fetch('http://'+ip+':'+port+'/setLimits', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({

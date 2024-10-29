@@ -18,14 +18,16 @@ const ADDRESS = require('../serverconn_conf/ServerAddress')
 const ip = ADDRESS.IP
 const port = ADDRESS.PORT
 
-//Poner esto aquí inicia la conexión al entrar en la app
-const ws = io('ws://'+ip+':'+port+'/chat')
+/* //Poner esto aquí inicia la conexión al entrar en la app
+const ws = io('ws://'+ip+':'+port+'/chat') */
 
 
 //Comprobar parámetro navigation
 const ChatAdmin = ({route, navigation}) => {
 
-  const { getUsername } = useAuth();
+  const { getUsername, jwtToken, wsChat } = useAuth();
+
+
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,26 +42,16 @@ const ChatAdmin = ({route, navigation}) => {
       //Cargar mensajes antiguos
       fetchData();
   
-      ws.on('connect', () => {
-        ws.emit('join', getUsername())
-      });
+/*       wsChat.on('connect', () => {
+        wsChat.emit('join', getUsername())
+      }); */
   
-      ws.on('message', (data) => {
+      wsChat.on('message', (data) => {
         console.log('user', data)
         fetchData();
       });
   
-      ws.on('close', () => {
-
-        //console.log(data.data)
-      });
-  
-      ws.on('error', (data) => {
-
-        //console.log(data.data)
-      });
-  
-  
+        
     }, []);
 
 
@@ -67,6 +59,7 @@ const ChatAdmin = ({route, navigation}) => {
     const response = await fetch('http://'+ip+':'+port+'/getChat', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -92,7 +85,7 @@ const ChatAdmin = ({route, navigation}) => {
   
     if(message!=''){
   
-      ws.send( 
+      wsChat.send( 
         [getUsername(), '0', message]
       )
       fetchData();
@@ -131,15 +124,16 @@ const ChatAdmin = ({route, navigation}) => {
           <SafeAreaView style={styles.container}>
 
 
-            {loading && <Text style={styles.loading}>Cargando...</Text>}
+            {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
-            {data &&
+            {data && 
 
               <FlatList 
               
               data={data} 
               renderItem={({item}) => <ChatBubble user={item[0]} value={item[1]}/>} 
               //extraData={refreshList}
+              inverted = {true}
               contentContainerStyle={styles.view}>
 
 
@@ -172,8 +166,9 @@ const ChatAdmin = ({route, navigation}) => {
     backgroundColor: '#fff',
     //alignItems: 'flex-start',
     //justifyContent: 'flex-start',
-    //marginTop: '20%',
+    //marginTop: '20%', 
     //marginLeft: '10%'
+    flexDirection:'column-reverse'
     },
 
     listWrapper: {

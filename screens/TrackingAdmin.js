@@ -13,17 +13,20 @@ import ButtonApp from '../components/ButtonApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 import Stoplight from '../components/Stoplight';
 
+import {useAuth} from '../context/AuthContext';
 
 import rodeoserver from '../serverconn_conf/ServerAddress'
 const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
-const ws = io('ws://'+ip+':'+port+'/stocks')
+
+
 
 
 const TrackingAdmin = ({navigation}) => {
 
-
+  const { getUsername, jwtToken, ws } = useAuth();
+  
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const[modalVisible, setModalVisible] = useState(false);
@@ -61,11 +64,6 @@ const TrackingAdmin = ({navigation}) => {
     //Cargar datos
     fetchData();
 
-    ws.on('connect', () => {
-      console.log("Conectado")
-
-      ws.emit('join', getUsername())
-    });
 
     ws.on('message', (data) => {
 
@@ -96,24 +94,17 @@ const TrackingAdmin = ({navigation}) => {
 
     });
 
-    ws.on('close', () => {
-      console.log("Nuevo mensaje")
-
-      //console.log(data.data)
-    });
-
-    ws.on('error', (data) => {
-      console.log("Nuevo mensaje")
-
-      //console.log(data.data)
-    });
-
-
+   
   }, []);
 
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getStocks')
+    const response = await fetch('https://'+ip+'/getStocks', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
 
     const data = await response.json();
     setData(data);
@@ -137,6 +128,7 @@ const TrackingAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/newStock', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -161,6 +153,9 @@ const TrackingAdmin = ({navigation}) => {
         )
         await fetch('http://'+ip+':'+port+'/newIconStock', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+          },
           body: formData,
   
       });
@@ -213,6 +208,7 @@ const TrackingAdmin = ({navigation}) => {
     await fetch('http://'+ip+':'+port+'/deleteStock', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -298,7 +294,8 @@ const TrackingAdmin = ({navigation}) => {
                         <Text style={styles.infoStockTitle}>%Cambio 1min</Text>
                         <Text style={styles.infoStockBottom}>{percent[symbol]}</Text>
 
-                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalEditVisible(false) }/>
+                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deleteStock(symbol) }/>
+                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => dismissEditStock(false) }/>
 
                     </View>
                 </TouchableWithoutFeedback>
@@ -309,7 +306,7 @@ const TrackingAdmin = ({navigation}) => {
 
 
 
-        {loading && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
         {data &&
 

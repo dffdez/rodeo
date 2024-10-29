@@ -4,6 +4,7 @@ import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, To
 
 import ButtonApp from '../../components/ButtonApp';
 
+import {useAuth} from '../../context/AuthContext';
 
 
 const ADDRESS = require('../../serverconn_conf/ServerAddress')
@@ -13,6 +14,9 @@ const port = ADDRESS.PORT
 
 
 const TrackConfRef = ({route, navigation}) => {
+
+  const { getUsername, jwtToken } = useAuth();
+
 
   const {simbolo} = route.params;
   const {nombre} = route.params;
@@ -39,9 +43,12 @@ const TrackConfRef = ({route, navigation}) => {
 
 
   const fetchData = async () => {
+
+
     const response = await fetch('http://'+ip+':'+port+'/getLimitsRef', {
       method: 'POST',
       headers: {
+          'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -67,9 +74,6 @@ const TrackConfRef = ({route, navigation}) => {
     set_ssl_apx_value_min(data[12])
     set_ssl_apx_value_max(data[13])
     set_ssl_sal_value_min(data[14])
-    
-
-
 
   }
 
@@ -78,13 +82,13 @@ const TrackConfRef = ({route, navigation}) => {
   }, []);
 
 
-
   
   const validateChanges = async () => {
 
     await fetch('http://'+ip+':'+port+'/setLimitsRef', {
       method: 'POST',
       headers: {
+          'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({

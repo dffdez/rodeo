@@ -6,6 +6,9 @@ import ButtonAppSecondary from '../../components/ButtonAppSecondary';
 import { ColorPicker } from 'react-native-color-picker';
 import Slider from '@react-native-community/slider';
 
+import {useAuth} from '../../context/AuthContext';
+
+
 import rodeoserver from '../../serverconn_conf/ServerAddress'
 const ip = rodeoserver.IP
 const port = rodeoserver.PORT
@@ -13,6 +16,9 @@ const port = rodeoserver.PORT
 
 
 const Stoplighconfig = ({navigation}) => {
+
+    const { jwtToken } = useAuth();
+
 
     const[modalStoplightVisible, setModalStoplightVisible] = useState(false);
 
@@ -32,7 +38,13 @@ const Stoplighconfig = ({navigation}) => {
 
     const fetchData = async () => {
 
-      const response = await fetch('http://'+ip+':'+port+'/getStoplight')
+  
+      const response = await fetch('http://'+ip+':'+port+'/getStoplight', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+        },
+    });
 
       const data = await response.json();
       setData(data);
@@ -54,9 +66,11 @@ const Stoplighconfig = ({navigation}) => {
 
     const savePickedColors = async () => {
 
+  
       await fetch('http://'+ip+':'+port+'/setStoplight', {
         method: 'POST',
         headers: {
+            'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({

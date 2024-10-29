@@ -6,8 +6,7 @@ import { WebView } from 'react-native-webview';
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from 'expo-av';
 
-
-
+import {useAuth} from '../context/AuthContext';
 
 
 import TextInputApp from '../components/TextInputApp';
@@ -22,6 +21,9 @@ const port = ADDRESS.PORT
 
 
 const BlogAdmin = ({navigation}) => {
+
+  const { getUsername, jwtToken} = useAuth();
+
 
 
   const[title, setTitle] = useState('')
@@ -59,7 +61,12 @@ const BlogAdmin = ({navigation}) => {
 
 
   const fetchData = async () => { 
-    const response = await fetch('http://'+ip+':'+port+'/getPosts');
+    const response = await fetch('http://'+ip+':'+port+'/getPosts', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
       
     const data = await response.json();
     setData(data);
@@ -67,14 +74,24 @@ const BlogAdmin = ({navigation}) => {
   }
 
   const getVideos = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getVideos'); 
+    const response = await fetch('http://'+ip+':'+port+'/getVideos', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  }); 
     const data = await response.json();
     setDataVideo(data);
     setLoading(false);
   }
 
   const getFiles = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getDocuments');  
+    const response = await fetch('http://'+ip+':'+port+'/getDocuments', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });  
     const data = await response.json();
     setDataDocuments(data);
     setLoading(false);
@@ -92,6 +109,7 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/newPost', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -113,6 +131,9 @@ const BlogAdmin = ({navigation}) => {
         )
         await fetch('http://'+ip+':'+port+'/newImage', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+          },
           body: formData,
   
       });
@@ -138,7 +159,8 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/newBlogVideo', {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`,  
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
               title: title,
@@ -158,6 +180,9 @@ const BlogAdmin = ({navigation}) => {
         )
         await fetch('http://'+ip+':'+port+'/newVideo', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+          },
           body: formData,
   
       });
@@ -183,6 +208,7 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/newBlogDocument', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -202,6 +228,9 @@ const BlogAdmin = ({navigation}) => {
         )
         await fetch('http://'+ip+':'+port+'/newDocument', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+          },
           body: formData,
   
       });
@@ -295,6 +324,7 @@ const BlogAdmin = ({navigation}) => {
     await fetch('http://'+ip+':'+port+'/modifyPost', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -317,6 +347,7 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/deletePost', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -330,6 +361,7 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/deletePostVideo', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -342,6 +374,7 @@ const BlogAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/deletePostDocument', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -416,7 +449,8 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload}} 
+            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload, 
+              headers: {'Authorization': `Bearer ${jwtToken}`} }} 
             style={styles.webview} 
             javaScriptEnabled={true}
             //allowsInlineMediaPlayback={true}
@@ -613,9 +647,9 @@ const BlogAdmin = ({navigation}) => {
       
 
 
-      {loading && <Text style={styles.loading}>Cargando...</Text>}
+      {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
-      {data && posts &&
+      {data && posts && 
 
           <FlatList 
           contentContainerStyle={styles.view}
@@ -625,7 +659,8 @@ const BlogAdmin = ({navigation}) => {
           renderItem={({item}) => 
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0], item[1])}> 
               <Text style={styles.title}>{item[0]}</Text>
-              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0]}} style={styles.imageblog} />
+              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0], 
+              headers: {'Authorization': `Bearer ${jwtToken}`}}} style={styles.imageblog} />
 
               <Text style={styles.article}>{item[1]}</Text>
             </TouchableOpacity> 
@@ -646,7 +681,8 @@ const BlogAdmin = ({navigation}) => {
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0])}> 
               <Text style={styles.title}>{item[0]}</Text>
               <Video 
-                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0]}}
+                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0], 
+                  headers: {'Authorization': `Bearer ${jwtToken}`}}}
                 useNativeControls   // Controles nativos del reproductor
                 resizeMode="contain"  // Cómo se ajusta el video al tamaño
                 isLooping  // Reproduce en bucle
