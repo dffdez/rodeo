@@ -21,7 +21,8 @@ const port = rodeoserver.PORT
 
 const ProfileAdmin = ({navigation}) => {
 
-    const { logout, getUsername } = useAuth();
+  const { getUsername, jwtToken} = useAuth();
+
 
     const[modalVisible, setModalVisible] = useState(false);
  
@@ -44,7 +45,12 @@ const ProfileAdmin = ({navigation}) => {
 
     const fetchData = async () => {
 
-      const response = await fetch('http://'+ip+':'+port+'/getAllUser')
+      const response = await fetch('http://'+ip+':'+port+'/getAllUser', {
+        method: 'GET',
+        headers: {
+                  'Authorization': `Bearer ${jwtToken}`,
+        },
+    });
   
       const data = await response.json();
       setData(data);
@@ -66,6 +72,7 @@ const ProfileAdmin = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/changePassword', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -92,6 +99,7 @@ const ProfileAdmin = ({navigation}) => {
           await fetch('http://'+ip+':'+port+'/changeUserData', {
             method: 'POST',
             headers: {
+              'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

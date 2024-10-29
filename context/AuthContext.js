@@ -1,5 +1,6 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { io } from 'socket.io-client'
 
 const AuthContext = createContext(null);
 const {Provider} = AuthContext;
@@ -12,6 +13,11 @@ const port = rodeoserver.PORT
 
 const AuthProvider = ({children}) => {
 
+    
+    const ws = io('ws://'+ip+':'+port+'/stocks')
+    const wsChat = io('ws://'+ip+':'+port+'/chat')
+
+    
     //Almacena el estado 
     const [authState, setAuthState] = useState({
         username: null,
@@ -20,13 +26,15 @@ const AuthProvider = ({children}) => {
         admin: false,
     });
 
+    const [jwtToken, setjwtToken] = useState(null)
+
 
     // Funcion para login
     const login = async(username, password) => {
 
         try {
 
-            const response = await fetch('http://'+ip+':'+port+'/login', {
+            const response = await fetch('https://'+ip+'/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,7 +50,7 @@ const AuthProvider = ({children}) => {
 
                 const data = await response.json();
                 const accessToken = data.access_token;
-                storeToken(accessToken, username)
+                storeToken(accessToken, username) //Almacena el token
 
                 //console.log(data)
                 
@@ -67,11 +75,6 @@ const AuthProvider = ({children}) => {
                     });
 
                 }
-
-                
-                //Almacenar accessToken
-                // IMPORTANTE
-                
 
                 console.log('Login successful.')
 
@@ -167,6 +170,17 @@ const AuthProvider = ({children}) => {
         }
     };
 
+    useEffect(() => {
+        const fetchToken = async () => {
+            const token = await getToken();  // Obtener el token
+            setjwtToken(token);  // Establecer el token en el estado
+        };
+
+        fetchToken();
+    }, []);
+
+
+
     //Devuelve usuario y token
     const getSession = async () => {
         try {
@@ -202,7 +216,7 @@ const AuthProvider = ({children}) => {
 
     //Devuelve si el usuario esta o no autenticado
     const getIsSignedIn = () => {
-        return authState.authenticated;
+        return authState.authenticated && jwtToken;
     };
 
 
@@ -215,7 +229,7 @@ const AuthProvider = ({children}) => {
 
 
     return (
-        <Provider value={{authState, getToken, getSession, login, logout, signup, getIsSignedIn, getIsAdmin, getUsername}}>
+        <Provider value={{authState, jwtToken, ws, wsChat, getToken, getSession, login, logout, signup, getIsSignedIn, getIsAdmin, getUsername}}>
             {children}
         </Provider>
     );

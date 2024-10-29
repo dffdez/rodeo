@@ -20,7 +20,8 @@ const port = ADDRESS.PORT
 
 const Profile = ({navigation}) => {
 
-    const { logout, getUsername } = useAuth();
+    const { logout, getUsername, jwtToken } = useAuth();
+    
 
     const[modalVisible, setModalVisible] = useState(false);
     const[modalPassVisible, setModalPassVisible] = useState(false);
@@ -59,6 +60,7 @@ const Profile = ({navigation}) => {
       const response = await fetch('http://'+ip+':'+port+'/getUserInfo', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -92,6 +94,7 @@ const Profile = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/changePassword', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -118,6 +121,7 @@ const Profile = ({navigation}) => {
           await fetch('http://'+ip+':'+port+'/changeUserData', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${jwtToken}`,
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -214,7 +218,7 @@ const Profile = ({navigation}) => {
 
 
 
-        {loading && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
         {data &&
 

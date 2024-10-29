@@ -9,6 +9,8 @@ import { WebView } from 'react-native-webview';
 import { Video } from 'expo-av';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import {useAuth} from '../context/AuthContext';
+
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
 const ip = ADDRESS.IP
@@ -17,6 +19,9 @@ const port = ADDRESS.PORT
 
 
 const BlogAdmin = ({navigation}) => {
+
+  const { getUsername, jwtToken} = useAuth();
+
 
   const [data, setData] = useState([]);
   const [dataVideo, setDataVideo] = useState([]);
@@ -32,7 +37,13 @@ const BlogAdmin = ({navigation}) => {
 
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getPosts');
+
+    const response = await fetch('http://'+ip+':'+port+'/getPosts', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
       
     const data = await response.json();
     setData(data);
@@ -40,14 +51,26 @@ const BlogAdmin = ({navigation}) => {
   }
 
   const getVideos = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getVideos'); 
+
+    const response = await fetch('http://'+ip+':'+port+'/getVideos', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  }); 
     const data = await response.json();
     setDataVideo(data);
     setLoading(false);
   }
 
   const getFiles = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getDocuments');  
+
+    const response = await fetch('http://'+ip+':'+port+'/getDocuments', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });  
     const data = await response.json();
     setDataDocuments(data);
     setLoading(false);
@@ -97,9 +120,6 @@ const BlogAdmin = ({navigation}) => {
 
     }
   }
-
-
-
   
       return(
     <SafeAreaView style={styles.container}>
@@ -108,7 +128,10 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload}} 
+            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload, 
+              headers: {'Authorization': `Bearer ${jwtToken}`}
+            }} 
+            
             style={styles.webview} 
             javaScriptEnabled={true}
             //allowsInlineMediaPlayback={true}
@@ -137,9 +160,9 @@ const BlogAdmin = ({navigation}) => {
           </TouchableOpacity> 
 
 
-      {loading && <Text style={styles.loading}>Cargando...</Text>}
+      {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
-      {data && posts &&
+      {data && posts && 
 
           <FlatList 
           contentContainerStyle={styles.view}
@@ -147,9 +170,10 @@ const BlogAdmin = ({navigation}) => {
           //extraData={refreshList}
 
           renderItem={({item}) => 
-            <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0], item[1])}> 
+            <TouchableOpacity style={styles.listWrapper}> 
               <Text style={styles.title}>{item[0]}</Text>
-              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0]}} style={styles.imageblog} />
+              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0], 
+                headers: {'Authorization': `Bearer ${jwtToken}`} }} style={styles.imageblog} />
 
               <Text style={styles.article}>{item[1]}</Text>
             </TouchableOpacity> 
@@ -167,10 +191,12 @@ const BlogAdmin = ({navigation}) => {
           //extraData={refreshList}
 
           renderItem={({item}) => 
-            <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0])}> 
+            <TouchableOpacity style={styles.listWrapper}> 
               <Text style={styles.title}>{item[0]}</Text>
               <Video 
-                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0]}}
+                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0], 
+              headers: {'Authorization': `Bearer ${jwtToken}`}
+                }}
                 useNativeControls   // Controles nativos del reproductor
                 resizeMode="contain"  // Cómo se ajusta el video al tamaño
                 isLooping  // Reproduce en bucle
@@ -187,14 +213,13 @@ const BlogAdmin = ({navigation}) => {
 
       {dataDocuments && files &&
 
-
         <FlatList 
           contentContainerStyle={styles.view}
           data={dataDocuments} 
           //extraData={refreshList}
 
           renderItem={({item}) => 
-            <TouchableOpacity style={styles.listWrapperFiles} onPress={() => documentAlert(item[0])} onLongPress={() => editPost(item[0])}> 
+            <TouchableOpacity style={styles.listWrapperFiles} onPress={() => documentAlert(item[0])}> 
               <Ionicons name={'document-text'} size={'200'} style={styles.row} />
               <Text style={styles.row}>{item[0]}</Text>
             </TouchableOpacity> 

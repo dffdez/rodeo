@@ -1,5 +1,5 @@
 
 module.exports = {
-    IP: '192.168.1.64',
-    PORT: '5000'
+    IP: 'ait25.us.es',
+    PORT: '443'
 } 

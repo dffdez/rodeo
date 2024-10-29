@@ -7,7 +7,8 @@ const ChatTextInput = ({ph, val, setVal, onPress}) => {
     return(
 
 
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 140 : 0}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.row}>
                         <TextInput value={val} style={styles.inputtext} onChangeText={setVal} placeholder={ph}/>

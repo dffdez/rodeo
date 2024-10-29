@@ -8,6 +8,7 @@ import ButtonAppSecondary from '../components/ButtonAppSecondary';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import {useAuth} from '../context/AuthContext';
 
 const ADDRESS = require('../serverconn_conf/ServerAddress')
 const ip = ADDRESS.IP
@@ -17,18 +18,30 @@ const port = ADDRESS.PORT
 
 const ChatIndex = ({navigation}) => {
 
+  const { getUsername, jwtToken} = useAuth();
+
+
+
   const [data, setData] = useState([]);
   const [doneChat, setDoneChat] = useState([]);
   const[modalVisible, setModalVisible] = useState(false);
 
   const[selectedChat, setSelectChat] = useState('');
 
+  const[allChats, setallChats] = useState(true);
+  const[pendingChats, setpendingChats] = useState(false);
+  const[storedChats, setstoredChats] = useState(false);
 
 
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getAllChats');
+    const response = await fetch('http://'+ip+':'+port+'/getAllChats', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
     const data = await response.json();
     setData(data);
     setLoading(false);
@@ -49,7 +62,12 @@ const ChatIndex = ({navigation}) => {
 
   const getStoredChat = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStoredChat');
+    const response = await fetch('http://'+ip+':'+port+'/getStoredChat', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
 
     const data = await response.json();
     setData(data);
@@ -61,7 +79,12 @@ const ChatIndex = ({navigation}) => {
 
   const getPendingChat = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getPendingChats');
+    const response = await fetch('http://'+ip+':'+port+'/getPendingChats', {
+      method: 'GET',
+      headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
 
     const data = await response.json();
     setData(data);
@@ -77,6 +100,7 @@ const ChatIndex = ({navigation}) => {
     await fetch('http://'+ip+':'+port+'/setStoredChat', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -85,7 +109,7 @@ const ChatIndex = ({navigation}) => {
   });
 
     setLoading(false);
-    fetchData();
+    handleVisible();
     setModalVisible(false);
 
   }
@@ -97,6 +121,7 @@ const ChatIndex = ({navigation}) => {
     await fetch('http://'+ip+':'+port+'/setPendingChat', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -105,29 +130,62 @@ const ChatIndex = ({navigation}) => {
   });
 
     setLoading(false);
-    fetchData();
+    handleVisible();
     setModalVisible(false);
 
   }
 
-  const deleteChat = async (alias) => {
+  const deleteChat = async () => {
     setLoading(true);
 
     await fetch('http://'+ip+':'+port+'/deleteChat', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          alias: alias,
+          alias: selectedChat,
       }),
   });
 
     setLoading(false);
-    fetchData();
+    handleVisible();
     setModalVisible(false);
 
+  }
 
+  const handleVisible = () => {
+    if (allChats == true) {
+      fetchData()
+    } else if (pendingChats == true) {
+      getPendingChat()
+    } else if (storedChats == true) {
+      getStoredChat()
+    }
+  }
+
+  const showScreen = async (screen) => {
+
+    if (screen == 'allChats') {
+      fetchData()
+      setallChats(true)   
+      setpendingChats(false)
+      setstoredChats(false) 
+
+    } else if (screen == 'pendingChats') {
+      getPendingChat()
+      setallChats(false)   
+      setpendingChats(true)
+      setstoredChats(false)      
+      
+    } else if (screen == 'storedChats') {
+      getStoredChat()
+      setallChats(false)   
+      setpendingChats(false)
+      setstoredChats(true) 
+
+    }
   }
 
 
@@ -174,15 +232,15 @@ const ChatIndex = ({navigation}) => {
       <View>
         <TouchableOpacity style={styles.listWrapperDone}>
 
-          <TouchableOpacity style={styles.rowIndex} onPress={() => fetchData()} >
+          <TouchableOpacity style={styles.rowIndex} onPress={() => showScreen('allChats')} >
             <Text style={styles.rowDone}>Todos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.rowIndex} onPress={() => getPendingChat()} >
+          <TouchableOpacity style={styles.rowIndex} onPress={() => showScreen('pendingChats')} >
             <Text style={styles.rowDone}>Pendientes</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.rowIndex} onPress={() => getStoredChat()} >
+          <TouchableOpacity style={styles.rowIndex} onPress={() => showScreen('storedChats')} >
             <Text style={styles.rowDone}>Archivados</Text>
           </TouchableOpacity>
 

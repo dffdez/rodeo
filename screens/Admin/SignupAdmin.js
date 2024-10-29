@@ -16,7 +16,7 @@ const port = rodeoserver.PORT
 
 const SignupAdmin = ({navigation}) => {
 
-  const { signup } = useAuth();
+  const { signup, jwtToken } = useAuth();
 
   const[alias, setAlias] = useState('')
   const[name, setName] = useState('')
@@ -36,11 +36,14 @@ const SignupAdmin = ({navigation}) => {
 
 
   const signupAdmin = async (alias, name, surname, email, password) => {
+
+
     try {
 
         const response = await fetch('http://'+ip+':'+port+'/signupAdmin', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

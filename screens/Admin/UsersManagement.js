@@ -21,6 +21,9 @@ const port = rodeoserver.PORT
 
 const UserManagement = ({navigation}) => {
 
+    const { getUsername, jwtToken } = useAuth();
+
+
 
     const[modalVisible, setModalVisible] = useState(false);
     const[modalPassVisible, setModalPassVisible] = useState(false);
@@ -47,7 +50,13 @@ const UserManagement = ({navigation}) => {
 
     const fetchData = async () => {
 
-      const response = await fetch('http://'+ip+':'+port+'/getAllUser')
+  
+      const response = await fetch('http://'+ip+':'+port+'/getAllUser', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+        },
+    });
   
       const data = await response.json();
       setData(data);
@@ -61,6 +70,8 @@ const UserManagement = ({navigation}) => {
 
 
     const changePassword = async () => {
+
+  
       
       //Campos de contraseña coinciden
       if (password!='' && passwordcheck!= '' && password==passwordcheck){
@@ -69,6 +80,7 @@ const UserManagement = ({navigation}) => {
         await fetch('http://'+ip+':'+port+'/changePassword', {
         method: 'POST',
         headers: {
+            'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -87,6 +99,8 @@ const UserManagement = ({navigation}) => {
       }
 
       const changeUserData = async () => {
+
+    
       
         //Campos de contraseña coinciden
         if (name!='' && surname!= '' && email!= ''){
@@ -95,6 +109,7 @@ const UserManagement = ({navigation}) => {
           await fetch('http://'+ip+':'+port+'/changeUserData', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -121,6 +136,8 @@ const UserManagement = ({navigation}) => {
           ]);
 
         const deleteUser = async (alias) => {
+
+      
     
           //Campos de contraseña coinciden
             setTextStylePassword(styles.inputtext)
@@ -128,6 +145,7 @@ const UserManagement = ({navigation}) => {
             await fetch('http://'+ip+':'+port+'/deleteUser', {
               method: 'POST',
               headers: {
+                  'Authorization': `Bearer ${jwtToken}`,
                   'Content-Type': 'application/json',
               },
               body: JSON.stringify({
@@ -142,9 +160,11 @@ const UserManagement = ({navigation}) => {
 
         const userInfo = async (alias) => {
 
+      
           const response = await fetch('http://'+ip+':'+port+'/getUserInfo', {
         method: 'POST',
         headers: {
+            'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({

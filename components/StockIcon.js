@@ -9,13 +9,16 @@ const port = ADDRESS.PORT
 
 
 const StockIcon = ({name}) => {
-    
+
+  const { getUsername, jwtToken} = useAuth();
+
 
 
   return (
 
     <TouchableOpacity style={styles.circle}>
-        <Image source={{uri: 'http://'+ip+':'+port+'/getIconStock/'+name}} style={styles.icon} />
+        <Image source={{uri: 'http://'+ip+':'+port+'/getIconStock/'+name, 
+                headers: {'Authorization': `Bearer ${jwtToken}`}}} style={styles.icon} />
     </TouchableOpacity> 
 
   )

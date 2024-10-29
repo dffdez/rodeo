@@ -13,7 +13,7 @@ const port = rodeoserver.PORT
 const StarButton = ({style, symbol, init}) => {
 
     const [fvselector, setFavStock] = useState(init);
-    const { getUsername } = useAuth();
+    const { getUsername, jwtToken } = useAuth();
     
 
     const setFavourite = async (symbol) => {
@@ -21,6 +21,7 @@ const StarButton = ({style, symbol, init}) => {
       await fetch('http://'+ip+':'+port+'/setFavourite', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -36,6 +37,7 @@ const StarButton = ({style, symbol, init}) => {
       await fetch('http://'+ip+':'+port+'/deleteFavourite', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({

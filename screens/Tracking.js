@@ -20,12 +20,12 @@ const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
 //Poner esto aquí inicia la conexión al entrar en la app
-const ws = io('ws://'+ip+':'+port+'/stocks')
-
+/* const ws = io('ws://'+ip+':'+port+'/stocks')
+ */
 
 const Tracking = ({navigation}) => {
 
-  const { getUsername, getToken } = useAuth();
+  const { getUsername, jwtToken, ws } = useAuth();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,9 +62,6 @@ const Tracking = ({navigation}) => {
 
   //Funciones base websockets
   useEffect(() => {
-
-    //JWT pruebas
-    pruebas();
 
     //Cargar datos
     fetchData();
@@ -122,12 +119,10 @@ const Tracking = ({navigation}) => {
 
   const fetchData = async () => {
 
-    let result = await getToken()
-
-    const response = await fetch('http://'+ip+':'+port+'/getFavourites', {
+    const response = await fetch('https://'+ip+'/getFavourites', {
       method: 'POST',
       headers: {
-          'Authorization': `Bearer ${result}`,
+          'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -163,7 +158,12 @@ const Tracking = ({navigation}) => {
 
   const getSemaforo = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStoplight')
+    const response = await fetch('http://'+ip+':'+port+'/getStoplight', {
+      method: 'GET',
+      headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
 
     const data = await response.json();
     setColor(data);
@@ -257,7 +257,7 @@ const Tracking = ({navigation}) => {
         </Modal>
 
       
-        {loading && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
 
         {data &&
 
