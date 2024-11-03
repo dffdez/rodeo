@@ -51,7 +51,7 @@ const UserManagement = ({navigation}) => {
     const fetchData = async () => {
 
   
-      const response = await fetch('http://'+ip+':'+port+'/getAllUser', {
+      const response = await fetch('https://'+ip+'/getAllUser', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -77,7 +77,7 @@ const UserManagement = ({navigation}) => {
       if (password!='' && passwordcheck!= '' && password==passwordcheck){
         setTextStylePassword(styles.inputtext)
 
-        await fetch('http://'+ip+':'+port+'/changePassword', {
+        await fetch('https://'+ip+'/changePassword', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -106,7 +106,7 @@ const UserManagement = ({navigation}) => {
         if (name!='' && surname!= '' && email!= ''){
           setTextStylePassword(styles.inputtext)
   
-          await fetch('http://'+ip+':'+port+'/changeUserData', {
+          await fetch('https://'+ip+'/changeUserData', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -142,7 +142,7 @@ const UserManagement = ({navigation}) => {
           //Campos de contraseña coinciden
             setTextStylePassword(styles.inputtext)
     
-            await fetch('http://'+ip+':'+port+'/deleteUser', {
+            await fetch('https://'+ip+'/deleteUser', {
               method: 'POST',
               headers: {
                   'Authorization': `Bearer ${jwtToken}`,
@@ -161,7 +161,7 @@ const UserManagement = ({navigation}) => {
         const userInfo = async (alias) => {
 
       
-          const response = await fetch('http://'+ip+':'+port+'/getUserInfo', {
+          const response = await fetch('https://'+ip+'/getUserInfo', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${jwtToken}`,

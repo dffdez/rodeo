@@ -45,7 +45,7 @@ const TrackConfRef = ({route, navigation}) => {
   const fetchData = async () => {
 
 
-    const response = await fetch('http://'+ip+':'+port+'/getLimitsRef', {
+    const response = await fetch('https://'+ip+'/getLimitsRef', {
       method: 'POST',
       headers: {
           'Authorization': `Bearer ${jwtToken}`,
@@ -85,7 +85,7 @@ const TrackConfRef = ({route, navigation}) => {
   
   const validateChanges = async () => {
 
-    await fetch('http://'+ip+':'+port+'/setLimitsRef', {
+    await fetch('https://'+ip+'/setLimitsRef', {
       method: 'POST',
       headers: {
           'Authorization': `Bearer ${jwtToken}`,

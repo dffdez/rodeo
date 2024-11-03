@@ -14,7 +14,7 @@ const StockConn = () => {
 
         try {
 
-            const response = await fetch('http://'+ip+':'+port+'/getStocks', {
+            const response = await fetch('https://'+ip+'/getStocks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

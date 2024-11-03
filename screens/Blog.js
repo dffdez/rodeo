@@ -38,7 +38,7 @@ const BlogAdmin = ({navigation}) => {
 
   const fetchData = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getPosts', {
+    const response = await fetch('https://'+ip+'/getPosts', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -52,7 +52,7 @@ const BlogAdmin = ({navigation}) => {
 
   const getVideos = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getVideos', {
+    const response = await fetch('https://'+ip+'/getVideos', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -65,7 +65,7 @@ const BlogAdmin = ({navigation}) => {
 
   const getFiles = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getDocuments', {
+    const response = await fetch('https://'+ip+'/getDocuments', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -128,7 +128,7 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload, 
+            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload, 
               headers: {'Authorization': `Bearer ${jwtToken}`}
             }} 
             
@@ -172,7 +172,7 @@ const BlogAdmin = ({navigation}) => {
           renderItem={({item}) => 
             <TouchableOpacity style={styles.listWrapper}> 
               <Text style={styles.title}>{item[0]}</Text>
-              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0], 
+              <Image source={{uri: 'https://'+ip+'/getBlogImage/'+item[0], 
                 headers: {'Authorization': `Bearer ${jwtToken}`} }} style={styles.imageblog} />
 
               <Text style={styles.article}>{item[1]}</Text>
@@ -194,7 +194,7 @@ const BlogAdmin = ({navigation}) => {
             <TouchableOpacity style={styles.listWrapper}> 
               <Text style={styles.title}>{item[0]}</Text>
               <Video 
-                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0], 
+                source={{uri: 'https://'+ip+'/getBlogVideo/'+item[0], 
               headers: {'Authorization': `Bearer ${jwtToken}`}
                 }}
                 useNativeControls   // Controles nativos del reproductor
@@ -267,6 +267,7 @@ const BlogAdmin = ({navigation}) => {
     //justifyContent: 'center',
     //marginTop: '20%',
     //marginLeft: '10%'
+    flexDirection:'column-reverse'
     },
 
     modalview: {

@@ -35,7 +35,7 @@ const TrackingAdmin = ({navigation}) => {
 
   const[symbol, setSymbol] = useState('');
   const[name, setName] = useState('');
-  const[acselector, setSelector] = useState('Acción');
+  const[acselector, setSelector] = useState('Acción / Crypto');
   const[imageName, setImageName] = useState('');
 
   const [stocks, setStocks] = useState({});
@@ -49,11 +49,11 @@ const TrackingAdmin = ({navigation}) => {
 
 
   const changeSelector = () => {
-    if (acselector == 'Acción'){
-      setSelector('Criptomoneda')
+    if (acselector == 'A'){
+      setSelector('C')
     }
     else{
-      setSelector('Acción')
+      setSelector('A')
     }
   }
 
@@ -123,9 +123,9 @@ const TrackingAdmin = ({navigation}) => {
 
   const newStock = async () => {
 
-    if (symbol != '' || name != '' && isSelectedImage){
+    if (symbol != '' && name != '' && isSelectedImage){
 
-        await fetch('http://'+ip+':'+port+'/newStock', {
+        await fetch('https://'+ip+'/newStock', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -134,7 +134,7 @@ const TrackingAdmin = ({navigation}) => {
           body: JSON.stringify({
               symbol: symbol,
               name: name,
-              type: acselector,
+              acselector: acselector,
           }),
       });
 
@@ -147,11 +147,11 @@ const TrackingAdmin = ({navigation}) => {
           'image',
           {
             uri: selectedImage,
-            name: title+'.jpg',
+            name: symbol+'.jpg',
             type: 'image/jpg',
           }
         )
-        await fetch('http://'+ip+':'+port+'/newIconStock', {
+        await fetch('https://'+ip+'/newIconStock', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -162,12 +162,13 @@ const TrackingAdmin = ({navigation}) => {
 
     }
 
-      fetchData();
 
       setSymbol('')
       setName('')
 
       setModalVisible(false)
+      fetchData();
+
 
     } else {
       Alert.alert('Información', 'Para añadir un nuevo valor debe incluir símbolo, nombre y seleccionar un icono.')
@@ -205,7 +206,7 @@ const TrackingAdmin = ({navigation}) => {
 
   const deleteStock = async (symbol) => {
 
-    await fetch('http://'+ip+':'+port+'/deleteStock', {
+    await fetch('https://'+ip+'/deleteStock', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -295,7 +296,7 @@ const TrackingAdmin = ({navigation}) => {
                         <Text style={styles.infoStockBottom}>{percent[symbol]}</Text>
 
                         <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deleteStock(symbol) }/>
-                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => dismissEditStock(false) }/>
+                        <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => dismissEditStock() }/>
 
                     </View>
                 </TouchableWithoutFeedback>

@@ -40,7 +40,7 @@ const SignupAdmin = ({navigation}) => {
 
     try {
 
-        const response = await fetch('http://'+ip+':'+port+'/signupAdmin', {
+        const response = await fetch('https://'+ip+'/signupAdmin', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,

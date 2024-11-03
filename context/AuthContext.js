@@ -14,8 +14,8 @@ const port = rodeoserver.PORT
 const AuthProvider = ({children}) => {
 
     
-    const ws = io('ws://'+ip+':'+port+'/stocks')
-    const wsChat = io('ws://'+ip+':'+port+'/chat')
+    const ws = io('wss://'+ip+'/stocks')
+    const wsChat = io('wss://'+ip+'/chat')
 
     
     //Almacena el estado 
@@ -92,7 +92,7 @@ const AuthProvider = ({children}) => {
     const signup = async (alias, name, surname, email, password) => {
         try {
 
-            const response = await fetch('http://'+ip+':'+port+'/signup', {
+            const response = await fetch('https://'+ip+'/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

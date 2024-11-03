@@ -18,7 +18,7 @@ const StarButton = ({style, symbol, init}) => {
 
     const setFavourite = async (symbol) => {
 
-      await fetch('http://'+ip+':'+port+'/setFavourite', {
+      await fetch('https://'+ip+'/setFavourite', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
@@ -34,7 +34,7 @@ const StarButton = ({style, symbol, init}) => {
   
     const deleteFavourite = async (symbol) => {
         
-      await fetch('http://'+ip+':'+port+'/deleteFavourite', {
+      await fetch('https://'+ip+'/deleteFavourite', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${jwtToken}`,

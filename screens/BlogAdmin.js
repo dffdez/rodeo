@@ -28,6 +28,8 @@ const BlogAdmin = ({navigation}) => {
 
   const[title, setTitle] = useState('')
   const[message, setMessage] = useState('')
+  const[oldtitle, setoldTitle] = useState('')
+
   const [selectedImage, setSelectImage] = useState(null);
   const [isSelectedImage, setIsSelectedImage] = useState(false);
   const [selectedDocument, setSelectDocument] = useState(null);
@@ -61,7 +63,7 @@ const BlogAdmin = ({navigation}) => {
 
 
   const fetchData = async () => { 
-    const response = await fetch('http://'+ip+':'+port+'/getPosts', {
+    const response = await fetch('https://'+ip+'/getPosts', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -74,7 +76,7 @@ const BlogAdmin = ({navigation}) => {
   }
 
   const getVideos = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getVideos', {
+    const response = await fetch('https://'+ip+'/getVideos', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -86,7 +88,7 @@ const BlogAdmin = ({navigation}) => {
   }
 
   const getFiles = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getDocuments', {
+    const response = await fetch('https://'+ip+'/getDocuments', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -106,7 +108,7 @@ const BlogAdmin = ({navigation}) => {
 
     if (title!='' && message!='' && isSelectedImage){
 
-        await fetch('http://'+ip+':'+port+'/newPost', {
+        await fetch('https://'+ip+'/newPost', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -129,7 +131,7 @@ const BlogAdmin = ({navigation}) => {
             type: 'image/jpg',
           }
         )
-        await fetch('http://'+ip+':'+port+'/newImage', {
+        await fetch('https://'+ip+'/newImage', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -156,7 +158,7 @@ const BlogAdmin = ({navigation}) => {
 
     if (title!='' && isSelectedVideo){
 
-        await fetch('http://'+ip+':'+port+'/newBlogVideo', {
+        await fetch('https://'+ip+'/newBlogVideo', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,  
@@ -178,7 +180,7 @@ const BlogAdmin = ({navigation}) => {
             type: 'video/mp4',
           }
         )
-        await fetch('http://'+ip+':'+port+'/newVideo', {
+        await fetch('https://'+ip+'/newVideo', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -205,7 +207,7 @@ const BlogAdmin = ({navigation}) => {
 
     if (title!='' && isSelectedDocument){
 
-        await fetch('http://'+ip+':'+port+'/newBlogDocument', {
+        await fetch('https://'+ip+'/newBlogDocument', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -226,7 +228,7 @@ const BlogAdmin = ({navigation}) => {
             type: 'application/pdf',
           }
         )
-        await fetch('http://'+ip+':'+port+'/newDocument', {
+        await fetch('https://'+ip+'/newDocument', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -309,6 +311,7 @@ const BlogAdmin = ({navigation}) => {
 
   const editPost = (title, article) => {
     setTitle(title)
+    setoldTitle(title)
     setMessage(article)
     handleSetModalEditVisible(true)
   }
@@ -321,7 +324,7 @@ const BlogAdmin = ({navigation}) => {
 
   const modifyPost = async (title, article) => {
 
-    await fetch('http://'+ip+':'+port+'/modifyPost', {
+    await fetch('https://'+ip+'/modifyPost', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -329,6 +332,7 @@ const BlogAdmin = ({navigation}) => {
       },
       body: JSON.stringify({
           title: title,
+          oldtitle: oldtitle,
           message: article,
       }),
   });
@@ -336,15 +340,64 @@ const BlogAdmin = ({navigation}) => {
   fetchData();
 
   setTitle('')
+  setoldTitle('')
   setMessage('')
-  setModalEditPostVisible(false)
+  setModalPostEditVisible(false)
+
+  }
+
+  const modifyPostVideo = async (title, article) => {
+
+    await fetch('https://'+ip+'/modifyBlogVideo', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          title: title,
+          oldtitle: oldtitle,
+          message: article,
+      }),
+  });
+
+  fetchData();
+
+  setTitle('')
+  setoldTitle('')
+  setMessage('')
+  setModalPostEditVisible(false)
+
+  }
+
+  const modifyPostDoc = async (title, article) => {
+
+    await fetch('https://'+ip+'/modifyBlogDocument', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          title: title,
+          oldtitle: oldtitle,
+          message: article,
+      }),
+  });
+
+  fetchData();
+
+  setTitle('')
+  setoldTitle('')
+  setMessage('')
+  setModalPostEditVisible(false)
 
   }
 
   const deletePost = async (title) => {
 
       if (posts == true) {
-        await fetch('http://'+ip+':'+port+'/deletePost', {
+        await fetch('https://'+ip+'/deletePost', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -358,7 +411,7 @@ const BlogAdmin = ({navigation}) => {
         fetchData();
 
       } else if (videos == true) {
-        await fetch('http://'+ip+':'+port+'/deletePostVideo', {
+        await fetch('https://'+ip+'/deletePostVideo', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -371,7 +424,7 @@ const BlogAdmin = ({navigation}) => {
 
         getVideos()  
       } else if (files == true) {
-        await fetch('http://'+ip+':'+port+'/deletePostDocument', {
+        await fetch('https://'+ip+'/deletePostDocument', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -449,7 +502,7 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'http://'+ip+':'+port+'/getBlogDocument/'+filenameDownload, 
+            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload, 
               headers: {'Authorization': `Bearer ${jwtToken}`} }} 
             style={styles.webview} 
             javaScriptEnabled={true}
@@ -560,7 +613,7 @@ const BlogAdmin = ({navigation}) => {
                     <View style={styles.modalview}>
                         <TextInput value={title} style={styles.inputTitle} onChangeText={setTitle} placeholder="Título" />
 
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Guardar cambios'} onPress={() => modifyPost(title, message)}/>
+                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Guardar cambios'} onPress={() => modifyPostVideo(title, message)}/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deletePost(title) }/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => dismissPost()}/>
 
@@ -615,7 +668,7 @@ const BlogAdmin = ({navigation}) => {
                     <View style={styles.modalview}>
                         <TextInput value={title} style={styles.inputTitle} onChangeText={setTitle} placeholder="Título" />
 
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Guardar cambios'} onPress={() => modifyPost(title, message)}/>
+                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Guardar cambios'} onPress={() => modifyPostDoc(title, message)}/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Eliminar'} onPress={() => deletePost(title) }/>
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => dismissPost()}/>
 
@@ -659,7 +712,7 @@ const BlogAdmin = ({navigation}) => {
           renderItem={({item}) => 
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0], item[1])}> 
               <Text style={styles.title}>{item[0]}</Text>
-              <Image source={{uri: 'http://'+ip+':'+port+'/getBlogImage/'+item[0], 
+              <Image source={{uri: 'https://'+ip+'/getBlogImage/'+item[0], 
               headers: {'Authorization': `Bearer ${jwtToken}`}}} style={styles.imageblog} />
 
               <Text style={styles.article}>{item[1]}</Text>
@@ -681,7 +734,7 @@ const BlogAdmin = ({navigation}) => {
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0])}> 
               <Text style={styles.title}>{item[0]}</Text>
               <Video 
-                source={{uri: 'http://'+ip+':'+port+'/getBlogVideo/'+item[0], 
+                source={{uri: 'https://'+ip+'/getBlogVideo/'+item[0], 
                   headers: {'Authorization': `Bearer ${jwtToken}`}}}
                 useNativeControls   // Controles nativos del reproductor
                 resizeMode="contain"  // Cómo se ajusta el video al tamaño
@@ -756,6 +809,7 @@ const BlogAdmin = ({navigation}) => {
     //justifyContent: 'center',
     //marginTop: '20%',
     //marginLeft: '10%'
+    flexDirection:'column-reverse'
     },
 
     modalview: {

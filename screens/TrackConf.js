@@ -43,7 +43,7 @@ const TrackConf = ({route, navigation}) => {
 
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getLimits', {
+    const response = await fetch('https://'+ip+'/getLimits', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -87,7 +87,7 @@ const TrackConf = ({route, navigation}) => {
   
   const validateChanges = async () => {
 
-    await fetch('http://'+ip+':'+port+'/setLimits', {
+    await fetch('https://'+ip+'/setLimits', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
