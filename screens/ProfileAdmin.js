@@ -45,7 +45,7 @@ const ProfileAdmin = ({navigation}) => {
 
     const fetchData = async () => {
 
-      const response = await fetch('http://'+ip+':'+port+'/getAllUser', {
+      const response = await fetch('https://'+ip+'/getAllUser', {
         method: 'GET',
         headers: {
                   'Authorization': `Bearer ${jwtToken}`,
@@ -69,7 +69,7 @@ const ProfileAdmin = ({navigation}) => {
       if (password!='' && passwordcheck!= '' && password==passwordcheck){
         setTextStylePassword(styles.inputtext)
 
-        await fetch('http://'+ip+':'+port+'/changePassword', {
+        await fetch('https://'+ip+'/changePassword', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
@@ -96,7 +96,7 @@ const ProfileAdmin = ({navigation}) => {
         if (name!='' && surname!= '' && email!= ''){
           setTextStylePassword(styles.inputtext)
   
-          await fetch('http://'+ip+':'+port+'/changeUserData', {
+          await fetch('https://'+ip+'/changeUserData', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${jwtToken}`,
@@ -120,7 +120,7 @@ const ProfileAdmin = ({navigation}) => {
 
         const userInfo = async (alias) => {
 
-          const response = await fetch('http://'+ip+':'+port+'/getUserInfo', {
+          const response = await fetch('https://'+ip+'/getUserInfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

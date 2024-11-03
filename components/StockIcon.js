@@ -17,7 +17,7 @@ const StockIcon = ({name}) => {
   return (
 
     <TouchableOpacity style={styles.circle}>
-        <Image source={{uri: 'http://'+ip+':'+port+'/getIconStock/'+name, 
+        <Image source={{uri: 'https://'+ip+'/getIconStock/'+name, 
                 headers: {'Authorization': `Bearer ${jwtToken}`}}} style={styles.icon} />
     </TouchableOpacity> 
 

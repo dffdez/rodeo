@@ -39,7 +39,7 @@ const Stoplighconfig = ({navigation}) => {
     const fetchData = async () => {
 
   
-      const response = await fetch('http://'+ip+':'+port+'/getStoplight', {
+      const response = await fetch('https://'+ip+'/getStoplight', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${jwtToken}`,
@@ -67,7 +67,7 @@ const Stoplighconfig = ({navigation}) => {
     const savePickedColors = async () => {
 
   
-      await fetch('http://'+ip+':'+port+'/setStoplight', {
+      await fetch('https://'+ip+'/setStoplight', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${jwtToken}`,

@@ -36,7 +36,7 @@ const ChatIndex = ({navigation}) => {
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getAllChats', {
+    const response = await fetch('https://'+ip+'/getAllChats', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -62,7 +62,7 @@ const ChatIndex = ({navigation}) => {
 
   const getStoredChat = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStoredChat', {
+    const response = await fetch('https://'+ip+'/getStoredChat', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -79,7 +79,7 @@ const ChatIndex = ({navigation}) => {
 
   const getPendingChat = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getPendingChats', {
+    const response = await fetch('https://'+ip+'/getPendingChats', {
       method: 'GET',
       headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -97,7 +97,7 @@ const ChatIndex = ({navigation}) => {
   const setStoreChat = async () => {
     setLoading(true);
 
-    await fetch('http://'+ip+':'+port+'/setStoredChat', {
+    await fetch('https://'+ip+'/setStoredChat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -118,7 +118,7 @@ const ChatIndex = ({navigation}) => {
   const setPendingChat = async () => {
     setLoading(true);
 
-    await fetch('http://'+ip+':'+port+'/setPendingChat', {
+    await fetch('https://'+ip+'/setPendingChat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -138,7 +138,7 @@ const ChatIndex = ({navigation}) => {
   const deleteChat = async () => {
     setLoading(true);
 
-    await fetch('http://'+ip+':'+port+'/deleteChat', {
+    await fetch('https://'+ip+'/deleteChat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,

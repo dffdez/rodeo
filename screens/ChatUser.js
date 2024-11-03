@@ -56,7 +56,7 @@ const ChatAdmin = ({route, navigation}) => {
 
 
   const fetchData = async () => {
-    const response = await fetch('http://'+ip+':'+port+'/getChat', {
+    const response = await fetch('https://'+ip+'/getChat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -99,7 +99,7 @@ const ChatAdmin = ({route, navigation}) => {
 
         if(message!=''){
 
-          await fetch('http://'+ip+':'+port+'/sendMessage', {
+          await fetch('https://'+ip+'/sendMessage', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

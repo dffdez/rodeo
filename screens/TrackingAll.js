@@ -21,12 +21,11 @@ const ip = rodeoserver.IP
 const port = rodeoserver.PORT
 
 
-const ws = io('ws://'+ip+':'+port+'/stocks')
 
 
 const TrackingAll = ({navigation}) => {
 
-  const { getUsername, jwtToken} = useAuth();
+  const { getUsername, jwtToken, ws} = useAuth();
 
 
   const [data, setData] = useState([]);
@@ -69,11 +68,11 @@ const TrackingAll = ({navigation}) => {
     //Cargar datos
     fetchData();
 
-    ws.on('connect', () => {
+   /* ws.on('connect', () => {
       console.log("Conectado")
 
       ws.emit('join', getUsername())
-    });
+    });*/
 
     ws.on('message', (data) => {
 
@@ -104,7 +103,7 @@ const TrackingAll = ({navigation}) => {
 
     });
 
-    ws.on('close', () => {
+   /* ws.on('close', () => {
       console.log("Nuevo mensaje")
 
       //console.log(data.data)
@@ -114,7 +113,7 @@ const TrackingAll = ({navigation}) => {
       console.log("Nuevo mensaje")
 
       //console.log(data.data)
-    });
+    });*/
 
 
   }, []);
@@ -122,7 +121,7 @@ const TrackingAll = ({navigation}) => {
 
   const fetchData = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStocksFav', {
+    const response = await fetch('https://'+ip+'/getStocksFav', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -148,7 +147,7 @@ const TrackingAll = ({navigation}) => {
   const filtro = async (url) => {
     setLoading(true);   
 
-    const response = await fetch('http://'+ip+':'+port+'/'+url, {
+    const response = await fetch('https://'+ip+'/'+url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
@@ -160,7 +159,7 @@ const TrackingAll = ({navigation}) => {
   });
     const data = await response.json();
     setData(data);
-    //console.log(data)
+    console.log(data)
 
     for (const item of data) {
       stocks[item[0][0]] = 0;

@@ -143,10 +143,9 @@ const Tracking = ({navigation}) => {
   }
 
   const infoStock = (symbol, name) => {
-
+    setImageName('Hola')
     setSymbol(symbol)
     setName(name)
-    setImageName(symbol)
     setModalVisible(true)
   }
 
@@ -158,7 +157,7 @@ const Tracking = ({navigation}) => {
 
   const getSemaforo = async () => {
 
-    const response = await fetch('http://'+ip+':'+port+'/getStoplight', {
+    const response = await fetch('https://'+ip+'/getStoplight', {
       method: 'GET',
       headers: {
           'Authorization': `Bearer ${jwtToken}`,

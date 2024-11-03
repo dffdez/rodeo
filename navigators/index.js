@@ -102,7 +102,7 @@ const Home = () => {
 
 
         //Almacena el token en la base de datos
-        await fetch('http://'+ip+':'+port+'/setPushNotificationToken', {
+        await fetch('https://'+ip+'/setPushNotificationToken', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
