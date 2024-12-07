@@ -25,7 +25,7 @@ const ws = io('ws://'+ip+':'+port+'/chat') */
 //Comprobar parámetro navigation
 const ChatAdmin = ({route, navigation}) => {
 
-  const { getUsername, jwtToken, wsChat } = useAuth();
+  const { authState, jwtToken, wsChat } = useAuth();
 
 
 
@@ -43,7 +43,7 @@ const ChatAdmin = ({route, navigation}) => {
       fetchData();
   
 /*       wsChat.on('connect', () => {
-        wsChat.emit('join', getUsername())
+        wsChat.emit('join', authState.username)
       }); */
   
       wsChat.on('message', (data) => {
@@ -63,7 +63,7 @@ const ChatAdmin = ({route, navigation}) => {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          alias: getUsername(),
+          alias: authState.username,
       }),
   });
 
@@ -77,7 +77,7 @@ const ChatAdmin = ({route, navigation}) => {
   const submitMessage = () => {
 
     console.log(JSON.stringify({
-      alias: getUsername(),
+      alias: authState.username,
       user: 0,
       message: message,
       }))
@@ -86,7 +86,7 @@ const ChatAdmin = ({route, navigation}) => {
     if(message!=''){
   
       wsChat.send( 
-        [getUsername(), '0', message]
+        [authState.username, '0', message]
       )
       fetchData();
       setMessage('');
@@ -105,7 +105,7 @@ const ChatAdmin = ({route, navigation}) => {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-              alias: getUsername(),
+              alias: authState.username,
               user: '0',
               message: message,
           }),

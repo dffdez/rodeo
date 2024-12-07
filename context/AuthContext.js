@@ -51,6 +51,7 @@ const AuthProvider = ({children}) => {
                 const data = await response.json();
                 const accessToken = data.access_token;
                 storeToken(accessToken, username) //Almacena el token
+                setjwtToken(accessToken)
 
                 //console.log(data)
                 
@@ -170,14 +171,16 @@ const AuthProvider = ({children}) => {
         }
     };
 
-    useEffect(() => {
-        const fetchToken = async () => {
+    /* useEffect(() => {
+       /*  const fetchToken = async () => {
             const token = await getToken();  // Obtener el token
             setjwtToken(token);  // Establecer el token en el estado
         };
 
         fetchToken();
-    }, []);
+
+        console.log("Donde estaba el token de la liada")
+    }, []); */
 
 
 

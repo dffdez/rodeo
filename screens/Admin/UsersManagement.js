@@ -21,7 +21,7 @@ const port = rodeoserver.PORT
 
 const UserManagement = ({navigation}) => {
 
-    const { getUsername, jwtToken } = useAuth();
+    const { authState, jwtToken } = useAuth();
 
 
 

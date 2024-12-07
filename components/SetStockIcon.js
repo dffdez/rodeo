@@ -20,11 +20,11 @@ const SetStockIcon= ({ok, onpress}) => {
     <TouchableOpacity style={styles.circle} >
       {!ok ?
           <TouchableOpacity style={styles.iconnook} onPress={onpress}> 
-            <Ionicons name={'image-outline'} size={'100'} style={styles.iconimage}/>
+            <Ionicons name={'image-outline'} size={100} style={styles.iconimage}/>
           </TouchableOpacity> 
         :
         <TouchableOpacity style={styles.iconok} onPress={onpress}> 
-            <Ionicons name={'image'} size={'100'} style={styles.iconimage}/>
+            <Ionicons name={'image'} size={100} style={styles.iconimage}/>
         </TouchableOpacity> 
       }
     </TouchableOpacity> 

@@ -25,7 +25,7 @@ const port = rodeoserver.PORT
 
 const TrackingAdmin = ({navigation}) => {
 
-  const { getUsername, jwtToken, ws } = useAuth();
+  const { authState, jwtToken, ws } = useAuth();
   
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -307,9 +307,9 @@ const TrackingAdmin = ({navigation}) => {
 
 
 
-        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-        {data &&
+        {data && jwtToken && authState.authenticated &&
 
 
           <FlatList 

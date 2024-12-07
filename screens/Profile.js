@@ -20,7 +20,7 @@ const port = ADDRESS.PORT
 
 const Profile = ({navigation}) => {
 
-    const { logout, getUsername, jwtToken } = useAuth();
+    const { logout, authState, jwtToken } = useAuth();
     
 
     const[modalVisible, setModalVisible] = useState(false);
@@ -64,7 +64,7 @@ const Profile = ({navigation}) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            alias: getUsername(),
+            alias: authState.username,
         }),
     });
   

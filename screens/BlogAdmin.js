@@ -22,7 +22,7 @@ const port = ADDRESS.PORT
 
 const BlogAdmin = ({navigation}) => {
 
-  const { getUsername, jwtToken} = useAuth();
+  const { authState, jwtToken} = useAuth();
 
 
 
@@ -700,9 +700,9 @@ const BlogAdmin = ({navigation}) => {
       
 
 
-      {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+      {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-      {data && posts && 
+      {data && posts &&
 
           <FlatList 
           contentContainerStyle={styles.view}
@@ -712,7 +712,7 @@ const BlogAdmin = ({navigation}) => {
           renderItem={({item}) => 
             <TouchableOpacity style={styles.listWrapper} onLongPress={() => editPost(item[0], item[1])}> 
               <Text style={styles.title}>{item[0]}</Text>
-              <Image source={{uri: 'https://'+ip+'/getBlogImage/'+item[0], 
+              <WebView source={{uri: 'https://'+ip+'/getBlogImage/'+item[0], 
               headers: {'Authorization': `Bearer ${jwtToken}`}}} style={styles.imageblog} />
 
               <Text style={styles.article}>{item[1]}</Text>

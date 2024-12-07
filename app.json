@@ -19,15 +19,21 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo_v.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dfdez.app_bolsa"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ec9cef43-298d-4b6e-91e5-7f4298971a02"
+      }
+    }
   }
 }

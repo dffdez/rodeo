@@ -59,7 +59,7 @@ Notifications.setNotificationHandler({
 const Home = () => {
 
     //Determinar si admin
-    const { getIsAdmin } = useAuth(); //Solo puede ser llamado dentro de function
+    const { authState } = useAuth(); //Solo puede ser llamado dentro de function
     const { getUsername, ws, wsChat } = useAuth();
     const { jwtToken } = useAuth(null);
 
@@ -67,8 +67,8 @@ const Home = () => {
     useEffect(() => {
 
         registerForPushNotificationsAsync();
-        ws.emit('join', getUsername())
-        wsChat.emit('join', getUsername())  
+        ws.emit('join', authState.username)
+        wsChat.emit('join', authState.username)  
 
     }, []);
 
@@ -109,7 +109,7 @@ const Home = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                alias: getUsername(),
+                alias: authState.username,
                 token: token,
             }),
         });
@@ -155,16 +155,16 @@ const Home = () => {
       >
 
         
-        {getIsAdmin() ? (
+        {authState.admin ? (
             <>
-                <Tab.Screen name="Seguimiento" component={TrackNav} options={{headerTitle: "Seguimiento", headerShown: true}}/>
+                <Tab.Screen name="Seguimiento" component={TrackNav} options={{headerTitle: "Seguimiento", headerShown: false}}/>
                 <Tab.Screen name="Blog" component={BlogAdmin} options={{headerTitle: "Blog", headerShown: true }}/>
                 <Tab.Screen name="Consultas" component={ChatNav} options={{headerTitle: "Consultas", headerShown: false }}/>
                 <Tab.Screen name="Configuración" component={ProfileNav} options={{headerTitle: "Perfil", headerShown: false }}/>
             </>
         ):(
             <>
-                <Tab.Screen name="Seguimiento" component={TrackUserNav} options={{headerTitle: "Seguimiento", headerShown: true}}/>
+                <Tab.Screen name="Seguimiento" component={TrackUserNav} options={{headerTitle: "Seguimiento", headerShown: false}}/>
                 <Tab.Screen name="Blog" component={Blog}  options={{headerTitle: "Blog", headerShown: true }} />
                 <Tab.Screen name="Consultas" component={ChatUser} options={{headerTitle: "Consultas", headerShown: true}}/>
                 <Tab.Screen name="Perfil" component={Profile} options={{headerTitle: "Perfil", headerShown: false }}/>
@@ -182,9 +182,9 @@ const Home = () => {
 
 const TrackNav = () => {
     return(
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="TrackingAdmin" component={TrackingAdmin} />
-            <Stack.Screen name="TrackConf" component={TrackConf} />
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="TrackingAdmin" component={TrackingAdmin} options={{headerTitle: "Seguimiento"}}/>
+            <Stack.Screen name="TrackConf" component={TrackConf} options={{headerTitle: "Seguimiento"}}/>
         </Stack.Navigator>
     )
 }
@@ -192,9 +192,9 @@ const TrackNav = () => {
 
 const TrackUserNav = () => {
     return(
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="TrackingFavs" component={Tracking} />
-            <Stack.Screen name="TrackingAll" component={TrackingAll} />
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="TrackingFavs" component={Tracking} options={{headerTitle: "Seguimiento"}}/>
+            <Stack.Screen name="TrackingAll" component={TrackingAll} options={{headerTitle: "Seguimiento"}} />
         </Stack.Navigator>
     )
 }
@@ -209,24 +209,6 @@ const ChatNav = () => {
 }
 
 
-const BlogUserNav = () => {
-    return(
-        <Stack.Navigator screenOptions={{headerShown: true}}>
-            <Stack.Screen name="Blog" component={Blog} options={{headerTitle: "Blog"}} />
-            <Stack.Screen name="Video" component={Video} options={{headerTitle: "Blog"}}/>
-        </Stack.Navigator>
-    )
-}
-
-
-const BlogNav = () => {
-    return(
-        <Stack.Navigator screenOptions={{headerShown: true}}>
-            <Stack.Screen name="BlogAdmin" component={BlogAdmin} options={{headerTitle: "Blog"}} />
-            <Stack.Screen name="Video" component={Video} options={{headerTitle: "Blog"}}/>
-        </Stack.Navigator>
-    )
-}
 
 const ProfileNav = () => {
     return(
@@ -249,19 +231,19 @@ const ProfileNav = () => {
 //BUTTONS before authentication
 const Navigation = () => {
 
-    const {getIsSignedIn, getSession} = useAuth(); //Solo puede ser llamado dentro de function
+    const {authState, getSession, jwtToken} = useAuth(); //Solo puede ser llamado dentro de function
 
 
-    useEffect(() => {
+   /*  useEffect(() => {
         getSession();
-    }, []);
+    }, []); */
 
 
 
       return(
         <NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
-                {getIsSignedIn() ? (
+                {authState.authenticated && jwtToken ? (
                     <>
                         <Stack.Screen name="Home" component={Home} />
                     </>
