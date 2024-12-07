@@ -13,7 +13,7 @@ const port = rodeoserver.PORT
 const StarButton = ({style, symbol, init}) => {
 
     const [fvselector, setFavStock] = useState(init);
-    const { getUsername, jwtToken } = useAuth();
+    const { authState, jwtToken } = useAuth();
     
 
     const setFavourite = async (symbol) => {
@@ -25,7 +25,7 @@ const StarButton = ({style, symbol, init}) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            alias: getUsername(),
+            alias: authState.username,
             simbolo: symbol,
         }),
     });
@@ -41,7 +41,7 @@ const StarButton = ({style, symbol, init}) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            alias: getUsername(),
+            alias: authState.username,
             simbolo: symbol,
         }),
     });

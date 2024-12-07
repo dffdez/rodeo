@@ -25,7 +25,7 @@ const port = rodeoserver.PORT
 
 const Tracking = ({navigation}) => {
 
-  const { getUsername, jwtToken, ws } = useAuth();
+  const { authState, jwtToken, ws } = useAuth();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,12 +64,12 @@ const Tracking = ({navigation}) => {
   useEffect(() => {
 
     //Cargar datos
-    fetchData();
+    //fetchData();
 
     ws.on('connect', () => {
       console.log("Conectado")
 
-      ws.emit('join', getUsername())
+      ws.emit('join', authState.username)
     });
 
     ws.on('message', (data) => {
@@ -126,7 +126,7 @@ const Tracking = ({navigation}) => {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          alias: getUsername(),
+          alias: authState.username,
       }),
   });
 
@@ -143,9 +143,9 @@ const Tracking = ({navigation}) => {
   }
 
   const infoStock = (symbol, name) => {
-    setImageName('Hola')
     setSymbol(symbol)
     setName(name)
+    setImageName(symbol)
     setModalVisible(true)
   }
 
@@ -256,9 +256,9 @@ const Tracking = ({navigation}) => {
         </Modal>
 
       
-        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-        {data &&
+        {data && jwtToken && authState.authenticated &&
 
         <FlatList 
         contentContainerStyle={styles.view}

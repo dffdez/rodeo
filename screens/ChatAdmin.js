@@ -23,7 +23,7 @@ const port = ADDRESS.PORT
 
 const ChatAdmin = ({route, navigation}) => {
 
-  const { getUsername, jwtToken, wsChat} = useAuth();
+  const { authState, jwtToken, wsChat} = useAuth();
 
   const {alias} = route.params;
 
@@ -112,9 +112,9 @@ const submitMessage = () => {
           <SafeAreaView style={styles.container}>
 
 
-            {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+            {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-            {data &&
+            {data && jwtToken && authState.authenticated &&
 
               <FlatList 
               

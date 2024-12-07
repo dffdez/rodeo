@@ -15,7 +15,7 @@ const port = ADDRESS.PORT
 
 const TrackConfRef = ({route, navigation}) => {
 
-  const { getUsername, jwtToken } = useAuth();
+  const { authState, jwtToken } = useAuth();
 
 
   const {simbolo} = route.params;

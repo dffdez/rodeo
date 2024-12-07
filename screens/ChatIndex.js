@@ -18,7 +18,7 @@ const port = ADDRESS.PORT
 
 const ChatIndex = ({navigation}) => {
 
-  const { getUsername, jwtToken} = useAuth();
+  const { authState, jwtToken} = useAuth();
 
 
 

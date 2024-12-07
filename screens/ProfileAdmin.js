@@ -21,7 +21,7 @@ const port = rodeoserver.PORT
 
 const ProfileAdmin = ({navigation}) => {
 
-  const { getUsername, jwtToken} = useAuth();
+  const { authState, jwtToken} = useAuth();
 
 
     const[modalVisible, setModalVisible] = useState(false);

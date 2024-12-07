@@ -25,7 +25,7 @@ const port = rodeoserver.PORT
 
 const TrackingAll = ({navigation}) => {
 
-  const { getUsername, jwtToken, ws} = useAuth();
+  const { authState, jwtToken, ws} = useAuth();
 
 
   const [data, setData] = useState([]);
@@ -71,7 +71,7 @@ const TrackingAll = ({navigation}) => {
    /* ws.on('connect', () => {
       console.log("Conectado")
 
-      ws.emit('join', getUsername())
+      ws.emit('join', authState.username)
     });*/
 
     ws.on('message', (data) => {
@@ -128,7 +128,7 @@ const TrackingAll = ({navigation}) => {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          alias: getUsername(),
+          alias: authState.username,
       }),
   });
     const data = await response.json();
@@ -154,7 +154,7 @@ const TrackingAll = ({navigation}) => {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          alias: getUsername(),
+          alias: authState.username,
       }),
   });
     const data = await response.json();
