@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, SafeAreaView, Alert} from 'react-native';
 
 import ButtonApp from '../../components/ButtonApp';
 
@@ -40,6 +40,8 @@ const TrackConfRef = ({route, navigation}) => {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
 
 
   const fetchData = async () => {
@@ -85,32 +87,62 @@ const TrackConfRef = ({route, navigation}) => {
   
   const validateChanges = async () => {
 
-    await fetch('https://'+ip+'/setLimitsRef', {
-      method: 'POST',
-      headers: {
-          'Authorization': `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        simbolo: simbolo,
-        e_apx_rsi_min: e_ent_rsi_max,
-        e_apx_rsi_max: e_apx_rsi_max,
-        e_apx_stoch_min: e_ent_stoch_max,
-        e_apx_stoch_max: e_apx_stoch_max,
-        e_ent_rsi_min: e_ent_rsi_min,
-        e_ent_rsi_max: e_ent_rsi_max,
-        e_ent_stoch_min: e_ent_stoch_min,
-        e_ent_stoch_max: e_ent_stoch_max,
-        stp_apx_stoch_min: stp_apx_stoch_min,
-        stp_apx_stoch_max: stp_apx_stoch_max,
-        stp_sal_stoch_min: stp_apx_stoch_max,
-        ssl_apx_value_min: ssl_apx_value_min,
-        ssl_apx_value_max: ssl_apx_value_max,
-        ssl_sal_value_min: ssl_apx_value_max
-      }),
-  });
+    setSaving(true)
+    
+    if (!isNaN(+e_ent_rsi_max) && !isNaN(+e_apx_rsi_max) && !isNaN(+e_ent_stoch_max) && !isNaN(+e_apx_stoch_max) &&
+    !isNaN(+e_ent_rsi_min) && !isNaN(+e_ent_rsi_max) && !isNaN(+e_ent_stoch_min) && !isNaN(+e_ent_stoch_max) && 
+    !isNaN(+stp_apx_stoch_min) && !isNaN(+stp_apx_stoch_max) && !isNaN(+stp_apx_stoch_max) && !isNaN(+ssl_apx_value_min) &&
+    !isNaN(+ssl_apx_value_max) && !isNaN(+ssl_apx_value_max) && 
+    
+    e_ent_rsi_max != '' && e_apx_rsi_max != '' && e_ent_stoch_max != '' && e_apx_stoch_max != '' &&
+    e_ent_rsi_min != '' && e_ent_rsi_max != '' && e_ent_stoch_min != '' && e_ent_stoch_max != '' && 
+    stp_apx_stoch_min != '' && stp_apx_stoch_max != '' && stp_apx_stoch_max != '' && ssl_apx_value_min != '' &&
+    ssl_apx_value_max != '' && ssl_apx_value_max != '') {
 
-    navigation.goBack()
+
+      if ( +e_ent_rsi_max <= +e_apx_rsi_max && +e_ent_rsi_min <= +e_ent_rsi_max && +e_ent_stoch_max <= +e_apx_stoch_max && +e_ent_stoch_min <= +e_ent_stoch_max &&
+         +stp_apx_stoch_min <= +stp_apx_stoch_max && +ssl_apx_value_min <= +ssl_apx_value_max) {
+
+
+            await fetch('https://'+ip+'/setLimitsRef', {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${jwtToken}`,
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                simbolo: simbolo,
+                e_apx_rsi_min: e_ent_rsi_max,
+                e_apx_rsi_max: e_apx_rsi_max,
+                e_apx_stoch_min: e_ent_stoch_max,
+                e_apx_stoch_max: e_apx_stoch_max,
+                e_ent_rsi_min: e_ent_rsi_min,
+                e_ent_rsi_max: e_ent_rsi_max,
+                e_ent_stoch_min: e_ent_stoch_min,
+                e_ent_stoch_max: e_ent_stoch_max,
+                stp_apx_stoch_min: stp_apx_stoch_min,
+                stp_apx_stoch_max: stp_apx_stoch_max,
+                stp_sal_stoch_min: stp_apx_stoch_max,
+                ssl_apx_value_min: ssl_apx_value_min,
+                ssl_apx_value_max: ssl_apx_value_max,
+                ssl_sal_value_min: ssl_apx_value_max
+              }),
+          });
+
+            navigation.goBack() 
+
+      } else {
+        setSaving(false)
+
+        Alert.alert('Error en los datos', '\nEl valor mínimo no puede ser mayor que el valor máximo.')
+        //\n\nEl valor máximo no puede ser menor que el valor mínimo.
+      }
+
+  } else {
+    setSaving(false)
+
+    Alert.alert('Error en los datos', 'Los valores introducidos debe ser números. \n\nNo puede haber valores en blanco.\n\nSe deben utilizar puntos en lugar de comas.')
+  }
 
   }
 
@@ -143,6 +175,9 @@ const TrackConfRef = ({route, navigation}) => {
     <SafeAreaView style={styles.container}>
 
 {loading && <Text style={styles.loading}>Cargando...</Text>}
+
+{saving && <Text style={styles.loading}>Guardando cambios...</Text>}
+
 
 {data &&
 
@@ -179,9 +214,9 @@ const TrackConfRef = ({route, navigation}) => {
 
               <View style={styles.listWrapper}>
                 <Text style={styles.fixedfield}>{e_ent_rsi_max}</Text>
-                <TextInput style={styles.inputfield} value={e_apx_rsi_max} onChangeText={set_e_apx_rsi_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_apx_rsi_max) && e_apx_rsi_max != '') ? styles.inputfield : styles.inputfieldError} value={e_apx_rsi_max} onChangeText={set_e_apx_rsi_max} inputMode='decimal'/>
                 <Text style={styles.fixedfield}>{e_ent_stoch_max}</Text>
-                <TextInput style={styles.inputfield} value={e_apx_stoch_max} onChangeText={set_e_apx_stoch_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_apx_stoch_max) && e_apx_stoch_max != '') ? styles.inputfield : styles.inputfieldError} value={e_apx_stoch_max} onChangeText={set_e_apx_stoch_max} inputMode='decimal'/>
               </View>
 
               <View style={styles.emptyspace} />
@@ -205,10 +240,10 @@ const TrackConfRef = ({route, navigation}) => {
               </View>
 
               <View style={styles.listWrapper}>
-                <TextInput style={styles.inputfield} value={e_ent_rsi_min} onChangeText={set_e_ent_rsi_min} inputMode='decimal'/>
-                <TextInput style={styles.inputfield} value={e_ent_rsi_max} onChangeText={set_e_ent_rsi_max} inputMode='decimal'/>
-                <TextInput style={styles.inputfield} value={e_ent_stoch_min} onChangeText={set_e_ent_stoch_min} inputMode='decimal'/>
-                <TextInput style={styles.inputfield} value={e_ent_stoch_max} onChangeText={set_e_ent_stoch_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_ent_rsi_min) && e_ent_rsi_min != '') ? styles.inputfield : styles.inputfieldError} value={e_ent_rsi_min} onChangeText={set_e_ent_rsi_min} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_ent_rsi_max) && e_ent_rsi_max != '') ? styles.inputfield : styles.inputfieldError} value={e_ent_rsi_max} onChangeText={set_e_ent_rsi_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_ent_stoch_min) && e_ent_stoch_min != '') ? styles.inputfield : styles.inputfieldError} value={e_ent_stoch_min} onChangeText={set_e_ent_stoch_min} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+e_ent_stoch_max) && e_ent_stoch_max != '') ? styles.inputfield : styles.inputfieldError} value={e_ent_stoch_max} onChangeText={set_e_ent_stoch_max} inputMode='decimal'/>
               </View>
 
               <View style={styles.emptyspace} />
@@ -234,8 +269,8 @@ const TrackConfRef = ({route, navigation}) => {
               <View style={styles.listWrapper}>
                 <Text style={styles.fixedfield}>-</Text>
                 <Text style={styles.fixedfield}>-</Text>
-                <TextInput style={styles.inputfield} value={stp_apx_stoch_min} onChangeText={set_stp_apx_stoch_min} inputMode='decimal'/>
-                <TextInput style={styles.inputfield} value={stp_apx_stoch_max} onChangeText={set_stp_apx_stoch_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+stp_apx_stoch_min) && stp_apx_stoch_min != '') ? styles.inputfield : styles.inputfieldError} value={stp_apx_stoch_min} onChangeText={set_stp_apx_stoch_min} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+stp_apx_stoch_max) && stp_apx_stoch_max != '') ? styles.inputfield : styles.inputfieldError} value={stp_apx_stoch_max} onChangeText={set_stp_apx_stoch_max} inputMode='decimal'/>
               </View>
 
               <View style={styles.emptyspace} />
@@ -286,8 +321,8 @@ const TrackConfRef = ({route, navigation}) => {
 
 
               <View style={styles.listWrapper}>
-                <TextInput style={styles.inputfield} value={ssl_apx_value_min} onChangeText={set_ssl_apx_value_min} inputMode='decimal'/>
-                <TextInput style={styles.inputfield} value={ssl_apx_value_max} onChangeText={set_ssl_apx_value_max} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+ssl_apx_value_min) && ssl_apx_value_min != '') ? styles.inputfield : styles.inputfieldError} value={ssl_apx_value_min} onChangeText={set_ssl_apx_value_min} inputMode='decimal'/>
+                <TextInput style={(!isNaN(+ssl_apx_value_max) && ssl_apx_value_max != '') ? styles.inputfield : styles.inputfieldError} value={ssl_apx_value_max} onChangeText={set_ssl_apx_value_max} inputMode='decimal'/>
               </View>
 
 
@@ -317,8 +352,8 @@ const TrackConfRef = ({route, navigation}) => {
 
               <View style={styles.emptyspace} />
 
-              <ButtonApp title={'Validar'} onPress={() => validateChanges()}/>
-              <ButtonApp title={'Descartar'} onPress={() => dismissChanges() }/>
+              <ButtonApp title={'Guardar cambios y Volver'} onPress={() => validateChanges()}/>
+              <ButtonApp title={'Descartar y Volver'} onPress={() => dismissChanges() }/>
 
 
               <View style={styles.emptyspace} />
@@ -421,6 +456,17 @@ const TrackConfRef = ({route, navigation}) => {
       backgroundColor: '#fff',
       borderWidth: 0.5,
       borderColor: 'black',
+      flex: 1,
+      fontSize: 15,
+      textAlign:'center', 
+      padding: 10,
+      borderRadius: 10,
+    },
+
+    inputfieldError: {
+      backgroundColor: '#fff',
+      borderWidth: 2,
+      borderColor: 'red',
       flex: 1,
       fontSize: 15,
       textAlign:'center', 

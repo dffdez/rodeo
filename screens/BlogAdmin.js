@@ -53,16 +53,15 @@ const BlogAdmin = ({navigation}) => {
   const [dataVideo, setDataVideo] = useState([]);
   const [dataDocuments, setDataDocuments] = useState([]);
 
-  const [filenameDownload, setFilenameDownload] = useState([]);
-  const [modalDownloadVisible, setModalDownloadVisible] = useState([]);
-
+  const [filenameDownload, setFilenameDownload] = useState('');
+  const [modalDownloadVisible, setModalDownloadVisible] = useState(false);
 
 
 
   const [loading, setLoading] = useState(true);
 
 
-  const fetchData = async () => { 
+  const fetchData = async () => {    
     const response = await fetch('https://'+ip+'/getPosts', {
       method: 'GET',
       headers: {
@@ -270,8 +269,8 @@ const BlogAdmin = ({navigation}) => {
 
     if(!result.canceled){
       setSelectVideo(result.assets[0].uri)
-      console.log(result)
-      console.log(result.assets[0].uri)
+      //console.log(result)
+      //console.log(result.assets[0].uri)
 
       setIsSelectedVideo(true)
 
@@ -502,10 +501,10 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload, 
-              headers: {'Authorization': `Bearer ${jwtToken}`} }} 
+            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload}} 
             style={styles.webview} 
             javaScriptEnabled={true}
+            startInLoadingState={true}
             //allowsInlineMediaPlayback={true}
           />
           <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalDownloadVisible(false) }/>
@@ -531,8 +530,8 @@ const BlogAdmin = ({navigation}) => {
                         <TextInput value={message} style={styles.inputText} onChangeText={setMessage} placeholder="Texto de la publicación" multiline={true}/>
 
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Añadir imagen'} onPress={() => selectImage() }/>
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Publicar'} onPress={() => newPost()}/>
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
+                        <ButtonApp button_style={styles.button} text_style={styles.buttonText} title={'Publicar'} onPress={() => newPost()}/>
+                        <ButtonApp button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
 
 
                     </View>
@@ -587,8 +586,8 @@ const BlogAdmin = ({navigation}) => {
                         <TextInput value={title} style={styles.inputTitle} onChangeText={setTitle} placeholder="Título" />
 
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Añadir video'} onPress={() => selectVideo() }/>
-                        <ButtonAppSecondary button_style={styles.buttonPublish} text_style={styles.buttonText} title={'Publicar'} onPress={() => newVideo()}/>
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
+                        <ButtonApp button_style={styles.buttonPublish} text_style={styles.buttonText} title={'Publicar'} onPress={() => newVideo()}/>
+                        <ButtonApp button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
 
 
                     </View>
@@ -642,8 +641,8 @@ const BlogAdmin = ({navigation}) => {
                         <TextInput value={title} style={styles.inputTitle} onChangeText={setTitle} placeholder="Título" />
 
                         <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Añadir archivo'} onPress={() => selectDocument() }/>
-                        <ButtonAppSecondary button_style={styles.buttonPublish} text_style={styles.buttonText} title={'Publicar'} onPress={() => newDocument()}/>
-                        <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
+                        <ButtonApp button_style={styles.buttonPublish} text_style={styles.buttonText} title={'Publicar'} onPress={() => newDocument()}/>
+                        <ButtonApp button_style={styles.button} text_style={styles.buttonText} title={'Descartar'} onPress={() => handleSetModalVisible(false) }/>
 
 
                     </View>
@@ -803,7 +802,7 @@ const BlogAdmin = ({navigation}) => {
     },
 
     view: {
-    flexGrow: 1,
+    //flexGrow: 1,
     backgroundColor: '#fff',
     //alignItems: 'flex-start',
     //justifyContent: 'center',

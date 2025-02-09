@@ -38,7 +38,7 @@ const Login = ({navigation}) => {
         <TextInputApp ph='Usuario' val={user} setVal={setUser}/>
         <TextInputApp ph='Constraseña' val={password} setVal={setPassword} secure={true}/>
 
-      
+
         <ButtonApp title={'Iniciar sesión'} onPress={() => handlerequest()}/>
 
         <Text style={styles.text}>¿Aún no te has registrado?</Text>

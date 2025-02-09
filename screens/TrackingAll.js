@@ -242,7 +242,7 @@ const TrackingAll = ({navigation}) => {
               <Text style={styles.symbol}>{item[0][0]}</Text>
               <Text style={styles.name}>{item[0][1]}</Text>
             </View>
-            <Text style={styles.pricerow}>{stocks[item[0][0]]}</Text>
+            <Text style={styles.pricerow}>{stocks[item[0][0]]} $</Text>
 
             <Stoplight style={styles.favrow} state={stoplight[item[0][0]]}/>
           </TouchableOpacity> 

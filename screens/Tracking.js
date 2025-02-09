@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet, Text, Platform, View, Image, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { io } from 'socket.io-client'
 import { useFocusEffect } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 import StarButton from '../components/StarButton';
 import favstar from '../assets/favstar.png';
@@ -113,12 +115,23 @@ const Tracking = ({navigation}) => {
       //console.log(data.data)
     });
 
+        // Update info color
+        getSemaforo()
+
+    //Update info button
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => infoColor()}>
+          <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+        </TouchableOpacity>
+      ),
+    });
 
   }, []);
 
 
   const fetchData = async () => {
-
+   
     const response = await fetch('https://'+ip+'/getFavourites', {
       method: 'POST',
       headers: {
@@ -166,16 +179,15 @@ const Tracking = ({navigation}) => {
 
     const data = await response.json();
     setColor(data);
-    setLoading(false);   
     
-    setNeutral(color[0])
-    setEntApx(color[1])
-    setEntEnt(color[2])
-    setTpApx(color[3])
-    setTpSal(color[4])
-    setStApx(color[5])
-    setStSal(color[6])
-
+    setNeutral(data[0])
+    setEntApx(data[1])
+    setEntEnt(data[2])
+    setTpApx(data[3])
+    setTpSal(data[4])
+    setStApx(data[5])
+    setStSal(data[6])
+   
   }
 
 
@@ -222,27 +234,33 @@ const Tracking = ({navigation}) => {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.modalview}>
 
-                      <View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Neutro</Text>
-                        <Stoplight style={styles.favrow} state={neutral}/> 
-                      </View><View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Entrada aproximación</Text>
-                        <Stoplight style={styles.favrow} state={ent_apx}/> 
-                      </View><View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Entrada</Text>
-                        <Stoplight style={styles.favrow} state={ent_ent}/> 
-                      </View><View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Salida 'take profit' aproximación</Text>
-                        <Stoplight style={styles.favrow} state={sal_tp_apx}/> 
-                      </View><View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Salida 'take profit'</Text>
-                        <Stoplight style={styles.favrow} state={sal_tp_sal}/> 
-                      </View><View style={styles.listWrapper}>
-                        <Text style={styles.infoStockTitle}>Salida 'stop loss' aproximación</Text>
-                        <Stoplight style={styles.favrow} state={sal_sl_apx}/>
-                      </View><View style={styles.listWrapper}> 
-                        <Text style={styles.infoStockTitle}>Salida 'stop loss'</Text>
-                        <Stoplight style={styles.favrow} state={sal_sl_sal}/> 
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Neutro</Text>
+                        <Stoplight style={styles.infoRow} state={neutral}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Entrada aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={ent_apx}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Entrada</Text>
+                        <Stoplight style={styles.infoRow} state={ent_ent}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'take profit' aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={sal_tp_apx}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'take profit'</Text>
+                        <Stoplight style={styles.infoRow} state={sal_tp_sal}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'stop loss' aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={sal_sl_apx}/>
+                      </View>
+                      <View style={styles.listInfoWrapper}> 
+                        <Text style={styles.infoColorTitle}>Salida 'stop loss'</Text>
+                        <Stoplight style={styles.infoRow} state={sal_sl_sal}/> 
                       </View>
 
 
@@ -274,9 +292,9 @@ const Tracking = ({navigation}) => {
               <Text style={styles.symbol}>{item[0]}</Text>
               <Text style={styles.name}>{item[1]}</Text>
             </View>
-            <Text style={styles.pricerow}>{stocks[item[0]]}</Text>
+            <Text style={styles.pricerow}>{stocks[item[0]]} $</Text>
 
-            <Stoplight style={styles.favrow} state={stoplight[item[0]]} onpress={() => infoColor(true)}/> 
+            <Stoplight style={styles.favrow} state={stoplight[item[0]]} /> 
           </TouchableOpacity> 
         }
         />
@@ -344,6 +362,37 @@ const Tracking = ({navigation}) => {
       //borderTopWidth: 0.5,
       alignItems: 'center',
 
+    },
+
+    listInfoWrapper: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      //borderBottomWidth: 0.5,
+      //borderTopWidth: 0.5,
+      //alignItems: 'center',
+
+    },
+
+    infoRow: {
+      backgroundColor: '#fff',
+      flex: 1,
+      marginBottom: 20,
+      marginTop:20,
+      fontSize: 15,
+      alignItems: 'flex-end',
+      //paddingHorizontal: 10,
+    },
+
+    infoColorTitle: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'black',
+      marginTop: 10,
+      marginBottom: 2,
+      flex: 2
     },
 
     row: {

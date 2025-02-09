@@ -124,9 +124,9 @@ const ChatAdmin = ({route, navigation}) => {
           <SafeAreaView style={styles.container}>
 
 
-            {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+            {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-            {data && 
+            {data && jwtToken && authState.authenticated &&
 
               <FlatList 
               

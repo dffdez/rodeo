@@ -7,7 +7,7 @@ import TextInputAppSecondary from '../components/TextInputAppSecondary';
 import ButtonApp from '../components/ButtonApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 import Logo from '../assets/logo_h.png';
-
+import { CommonActions } from '@react-navigation/native';
 
 import {useAuth} from '../context/AuthContext';
 
@@ -21,10 +21,11 @@ const port = rodeoserver.PORT
 
 const ProfileAdmin = ({navigation}) => {
 
-  const { authState, jwtToken} = useAuth();
-
+    const { logout, authState, jwtToken } = useAuth();
 
     const[modalVisible, setModalVisible] = useState(false);
+    const[modalVisiblelogout, setModalVisiblelogout] = useState(false);
+
  
     const[usermessage, setUserMessage] = useState('');
     const[username, setUserName] = useState('');
@@ -143,12 +144,50 @@ const ProfileAdmin = ({navigation}) => {
           setModalVisible(true)
     
           }
-      
+
+          const disconnect = () => {
+            setUserMessage('Está a punto de cerrar sesión. ¿Desea continuar?')
+            setModalVisiblelogout(true)
+        }
+    
+        const handlerequest = () => {
+
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                { name: 'Configuración' },
+              ],
+            })
+          );
+
+          logout()
+          setModalVisiblelogout(false)
+
+
+    
+        }
+
+       
 
 
 
     return(
       <SafeAreaView style={styles.container}>
+
+        <Modal animationType="slide" transparent={true} visible={modalVisiblelogout}>
+
+        <SafeAreaView style={styles.container}>
+
+            <View style={styles.modalview}>
+              <Text>{usermessage}</Text>
+              <ButtonApp title={'Cerrar sesión'} onPress={() => handlerequest()}/>
+              <ButtonApp title={'Volver'} onPress={() => setModalVisiblelogout(false)}/>
+            </View>
+
+            </SafeAreaView>
+
+        </Modal>
 
 
 
@@ -171,7 +210,7 @@ const ProfileAdmin = ({navigation}) => {
                     <TextInputAppSecondary ph='Confirmar contraseña' val={passwordcheck} setVal={setPasswordCheck} secure={true} style={styles.inputtext}/>
                     
                     <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => changePassword()}/>
-                    <ButtonApp title={'Volver'} onPress={() => setModalVisible(false)}/>
+                    <ButtonApp title={'Descartar y Volver'} onPress={() => setModalVisible(false)}/>
 
                   </View>
 
@@ -193,7 +232,9 @@ const ProfileAdmin = ({navigation}) => {
       <ButtonAppSecondary title={'Crear administrador'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('SignupAdmin')}/>
 
       <ButtonAppSecondary title={'Perfil'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('Profile')}/>
-        
+      
+      <ButtonAppSecondary title={'Cerrar sesión'} button_style={styles.button} text_style={styles.text} onPress={() => disconnect()}/>
+
 
 
         </SafeAreaView>

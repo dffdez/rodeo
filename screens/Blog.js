@@ -32,8 +32,8 @@ const BlogAdmin = ({navigation}) => {
   const[videos, setVideos] = useState(false);
   const[files, setFiles] = useState(false);
 
-  const [filenameDownload, setFilenameDownload] = useState([]);
-  const [modalDownloadVisible, setModalDownloadVisible] = useState([]);
+  const [filenameDownload, setFilenameDownload] = useState('');
+  const [modalDownloadVisible, setModalDownloadVisible] = useState(false);
 
 
   const fetchData = async () => {
@@ -120,7 +120,7 @@ const BlogAdmin = ({navigation}) => {
 
     }
   }
-  
+
       return(
     <SafeAreaView style={styles.container}>
 
@@ -128,13 +128,13 @@ const BlogAdmin = ({navigation}) => {
 
         <View style={styles.container}>
           <WebView 
-            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload, 
-              headers: {'Authorization': `Bearer ${jwtToken}`}
-            }} 
-            
+            source={{ uri: 'https://'+ip+'/getBlogDocument/'+filenameDownload}} 
+            //source={{ uri: `https://docs.google.com/gview?embedded=true&url=${'https://'+ip+'/getBlogDocument/'+filenameDownload}`}} 
             style={styles.webview} 
             javaScriptEnabled={true}
-            //allowsInlineMediaPlayback={true}
+            startInLoadingState={true}
+            //allowFileAccess={true}
+            
           />
           <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalDownloadVisible(false) }/>
           <View style={styles.emptyspace} />
@@ -183,7 +183,7 @@ const BlogAdmin = ({navigation}) => {
       }
 
 
-      {dataVideo && videos &&
+      {dataVideo && videos && jwtToken && authState.authenticated &&
 
       <FlatList 
           contentContainerStyle={styles.view}
@@ -199,7 +199,7 @@ const BlogAdmin = ({navigation}) => {
                 }}
                 useNativeControls   // Controles nativos del reproductor
                 resizeMode="contain"  // Cómo se ajusta el video al tamaño
-                isLooping  // Reproduce en bucle
+                //isLooping  // Reproduce en bucle
                 style={styles.imageblog} />
             </TouchableOpacity> 
           }
@@ -211,7 +211,7 @@ const BlogAdmin = ({navigation}) => {
       }
 
 
-      {dataDocuments && files &&
+      {dataDocuments && files && jwtToken && authState.authenticated &&
 
         <FlatList 
           contentContainerStyle={styles.view}
@@ -261,7 +261,7 @@ const BlogAdmin = ({navigation}) => {
     },
 
     view: {
-    flexGrow: 1,
+    //flexGrow: 1,
     backgroundColor: '#fff',
     //alignItems: 'flex-start',
     //justifyContent: 'center',
@@ -338,6 +338,7 @@ const BlogAdmin = ({navigation}) => {
       marginBottom: 10,
       width: 350,
       height: 300,
+      backgroundColor: 'black',
     },
 
     button: {

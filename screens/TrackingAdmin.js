@@ -4,6 +4,8 @@ import { FlatList, StyleSheet, Text, TextInput, View, Platform, TouchableOpacity
 import Slider from '@react-native-community/slider';
 import { io } from 'socket.io-client'
 import * as ImagePicker from 'expo-image-picker';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 import SetStockIcon from '../components/SetStockIcon';
 import StockIcon from '../components/StockIcon';
@@ -31,11 +33,15 @@ const TrackingAdmin = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const[modalVisible, setModalVisible] = useState(false);
   const[modalEditVisible, setModalEditVisible] = useState(false);
+  const[modalInfoColor, setModalInfoColor] = useState(false);
+  
 
 
   const[symbol, setSymbol] = useState('');
   const[name, setName] = useState('');
-  const[acselector, setSelector] = useState('Acción / Crypto');
+  const[acselector, setSelector] = useState('');
+  const[acselectorNombre, setSelectorNombre] = useState('Acción / Crypto');
+
   const[imageName, setImageName] = useState('');
 
   const [stocks, setStocks] = useState({});
@@ -47,12 +53,22 @@ const TrackingAdmin = ({navigation}) => {
   const [selectedImage, setSelectImage] = useState(null);
   const [isSelectedImage, setIsSelectedImage] = useState(false);
 
+    const[neutral, setNeutral] = useState('');
+    const[ent_apx, setEntApx] = useState('');
+    const[ent_ent, setEntEnt] = useState('');
+    const[sal_tp_apx, setTpApx] = useState('');
+    const[sal_tp_sal, setTpSal] = useState('');
+    const[sal_sl_apx, setStApx] = useState('');
+    const[sal_sl_sal, setStSal] = useState('');
+
 
   const changeSelector = () => {
-    if (acselector == 'A'){
+    if (acselectorNombre == 'Acción'){
+      setSelectorNombre('Crypto')
       setSelector('C')
     }
     else{
+      setSelectorNombre('Acción')
       setSelector('A')
     }
   }
@@ -118,6 +134,19 @@ const TrackingAdmin = ({navigation}) => {
 
   useEffect(() => {
     fetchData();
+    // Update info color
+    getSemaforo()
+
+     //Update info button
+        navigation.setOptions({
+          headerRight: () => (
+            <TouchableOpacity onPress={() => infoColor()}>
+              <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+            </TouchableOpacity>
+          ),
+        });
+
+
   }, []);
 
 
@@ -237,7 +266,31 @@ const TrackingAdmin = ({navigation}) => {
     }
   }
 
+  const infoColor= () => {
+    getSemaforo()
+    setModalInfoColor(true)
+  }
 
+  const getSemaforo = async () => {
+
+    const response = await fetch('https://'+ip+'/getStoplight', {
+      method: 'GET',
+      headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+      },
+  });
+
+    const data = await response.json();
+    
+    setNeutral(data[0])
+    setEntApx(data[1])
+    setEntEnt(data[2])
+    setTpApx(data[3])
+    setTpSal(data[4])
+    setStApx(data[5])
+    setStSal(data[6])
+   
+  }
 
 
   
@@ -260,10 +313,10 @@ const TrackingAdmin = ({navigation}) => {
                       <TextInput value={symbol} style={styles.inputTitle} onChangeText={setSymbol} placeholder="Símbolo" />
                       <TextInput value={name} style={styles.inputTitle} onChangeText={setName} placeholder="Nombre" />
 
-                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={acselector} onPress={() => changeSelector()}/>
+                      <ButtonAppSecondary button_style={styles.button} text_style={styles.buttonText} title={acselectorNombre} onPress={() => changeSelector()}/>
 
-                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Añadir'} onPress={() => newStock()}/>
-                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Descartar'} onPress={() => dismissStock() }/>
+                      <ButtonApp button_style={styles.buttonAD} text_style={styles.buttonText} title={'Añadir'} onPress={() => newStock()}/>
+                      <ButtonApp button_style={styles.buttonAD} text_style={styles.buttonText} title={'Descartar'} onPress={() => dismissStock() }/>
 
 
                   </View>
@@ -305,6 +358,53 @@ const TrackingAdmin = ({navigation}) => {
         </SafeAreaView>
         </Modal>
 
+        <Modal animationType="slide" transparent={true} visible={modalInfoColor}>
+
+          <SafeAreaView style={styles.modalcontainer}> 
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modalview}>
+
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Neutro</Text>
+                        <Stoplight style={styles.infoRow} state={neutral}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Entrada aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={ent_apx}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Entrada</Text>
+                        <Stoplight style={styles.infoRow} state={ent_ent}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'take profit' aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={sal_tp_apx}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'take profit'</Text>
+                        <Stoplight style={styles.infoRow} state={sal_tp_sal}/> 
+                      </View>
+                      <View style={styles.listInfoWrapper}>
+                        <Text style={styles.infoColorTitle}>Salida 'stop loss' aproximación</Text>
+                        <Stoplight style={styles.infoRow} state={sal_sl_apx}/>
+                      </View>
+                      <View style={styles.listInfoWrapper}> 
+                        <Text style={styles.infoColorTitle}>Salida 'stop loss'</Text>
+                        <Stoplight style={styles.infoRow} state={sal_sl_sal}/> 
+                      </View>
+
+
+                      <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalInfoColor(false) }/>
+
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+
+        </SafeAreaView>
+        </Modal>
+
 
 
         {loading && <Text style={styles.loading}>Cargando...</Text>}
@@ -323,7 +423,7 @@ const TrackingAdmin = ({navigation}) => {
                 <Text style={styles.symbol}>{item[0]}</Text>
                 <Text style={styles.name}>{item[1]}</Text>
               </View>
-              <Text style={styles.pricerow}>{stocks[item[0]]}</Text>
+              <Text style={styles.pricerow}>{stocks[item[0]]} $</Text>
 
             <Stoplight style={styles.favrow} state={stoplight[item[0]]}/> 
 
@@ -336,7 +436,7 @@ const TrackingAdmin = ({navigation}) => {
         }
 
 
-        <ButtonApp title={'Añadir a seguimiento'} onPress={() => setModalVisible(true)}/>
+        <ButtonApp title={'Añadir a seguimiento'} onPress={() =>  navigation.navigate('TrackingAdminAdd')}/>
 
         <View style={styles.emptyspace} />
 
@@ -551,6 +651,37 @@ const TrackingAdmin = ({navigation}) => {
       marginBottom: 10,
       marginBottom: 40,
 
+    },
+
+    listInfoWrapper: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      //borderBottomWidth: 0.5,
+      //borderTopWidth: 0.5,
+      //alignItems: 'center',
+
+    },
+
+    infoRow: {
+      backgroundColor: '#fff',
+      flex: 1,
+      marginBottom: 20,
+      marginTop:20,
+      fontSize: 15,
+      alignItems: 'flex-end',
+      //paddingHorizontal: 10,
+    },
+
+    infoColorTitle: {
+      fontSize: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: '4%',
+      paddingRight: '4%',
+      color: 'black',
+      marginTop: 10,
+      marginBottom: 2,
+      flex: 2
     },
 
 

@@ -1,6 +1,7 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { io } from 'socket.io-client'
+import { Alert } from 'react-native';
 
 const AuthContext = createContext(null);
 const {Provider} = AuthContext;
@@ -81,10 +82,14 @@ const AuthProvider = ({children}) => {
 
 
             } else {
+                Alert.alert('Inicio de sesión', 'El usuario y/o la contraseña son incorrectos.\n\nPor favor, inténtelo de nuevo.')
+                
                 console.error('Login failed.');
             }
         } catch (error) {
+            Alert.alert('Inicio de sesión', 'El servidor no responde.\n\nPor favor, inténtelo más tarde.')
             console.error('Error during login:', error);
+
         }
     };
 
@@ -147,7 +152,6 @@ const AuthProvider = ({children}) => {
 
     const storeToken = async (token, user) => {
         try {
-            //console.log('Store token', token)
             await SecureStore.setItemAsync('jwtToken', token)
             await SecureStore.setItemAsync('user', user)
         } catch (error) {
@@ -179,7 +183,6 @@ const AuthProvider = ({children}) => {
 
         fetchToken();
 
-        console.log("Donde estaba el token de la liada")
     }, []); */
 
 

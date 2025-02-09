@@ -19,16 +19,16 @@ const port = rodeoserver.PORT
 
 
 
-const UserManagement = ({navigation}) => {
+const UserConfig = ({route, navigation}) => {
 
     const { authState, jwtToken } = useAuth();
 
 
 
-    const[modalVisible, setModalVisible] = useState(false);
     const[modalPassVisible, setModalPassVisible] = useState(false);
     const[textStylePassword, setTextStylePassword] = useState(styles.inputtext);
 
+    const {aliasparam} = route.params;
 
  
     const[name, setName] = useState('');
@@ -48,24 +48,10 @@ const UserManagement = ({navigation}) => {
 
 
 
-    const fetchData = async () => {
-
-  
-      const response = await fetch('https://'+ip+'/getAllUser', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-        },
-    });
-  
-      const data = await response.json();
-      setData(data);
-      setLoading(false);
-  
-    }
+    
   
     useEffect(() => {
-      fetchData();
+      userInfo(aliasparam);
     }, []);
 
 
@@ -121,8 +107,7 @@ const UserManagement = ({navigation}) => {
            });
 
          fetchData();
-         setModalVisible(false)
-  
+         navigation.goBack()  
         }
   
         }
@@ -154,8 +139,7 @@ const UserManagement = ({navigation}) => {
              });
   
            fetchData();
-           setModalVisible(false)
-        
+           navigation.goBack()        
           }
 
         const userInfo = async (alias) => {
@@ -192,25 +176,71 @@ const UserManagement = ({navigation}) => {
     return(
       <SafeAreaView style={styles.container}>
 
+        <Modal animationType="slide" transparent={true} visible={modalPassVisible}>
+
+        <SafeAreaView style={styles.container}>
+
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+                  <View style={styles.modalview}>
+
+                    <TextInputAppSecondary ph='Contraseña' val={password} setVal={setPassword} secure={true} style={textStylePassword}/>
+                    <TextInputAppSecondary ph='Confirmar contraseña' val={passwordcheck} setVal={setPasswordCheck} secure={true} style={textStylePassword}/>
+                    <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => changePassword()}/>
+                    <ButtonApp title={'Descartar y Volver'} onPress={() => setModalPassVisible(false)}/>
+
+                  </View>
+
+                  </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+
+            </SafeAreaView>
+
+
+        </Modal>
+
+
+
+
       {loading && <Text style={styles.loading}>Cargando...</Text>}
 
       {data &&
       
-        <FlatList 
-        data={data} 
-        renderItem={({item}) => 
-          <TouchableOpacity style={styles.listWrapper} onPress={() => navigation.navigate('UserConfig', {aliasparam: item[0]})}>
-            <Ionicons name={'person'} size={'200'} style={styles.row} />
-            <Text style={styles.row}>{item}</Text>
-          </TouchableOpacity> 
-        } 
-        />
+      <SafeAreaView style={styles.container}>
+
+
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+              <View style={styles.modalview}>
+
+                  <Text style={styles.username}>@{alias} </Text>
+
+                  <TextInputAppSecondary ph='Nombre' val={name} setVal={setName} style={styles.inputtext}/>
+                  <TextInputAppSecondary ph='Apellidos' val={surname} setVal={setSurname} style={styles.inputtext}/>
+                  <TextInputAppSecondary ph='Correo electrónico' val={email} setVal={setEmail} inputmod='email' style={styles.inputtext}/>
+                  <ButtonAppSecondary title={'Cambiar contraseña'} button_style={styles.button2} text_style={styles.text2} onPress={() => setModalPassVisible(true)}/>  
+
+
+                  <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.buttonOk} text_style={styles.text} onPress={() => changeUserData()}/>
+                  <ButtonAppSecondary title={'Eliminar usuario'} button_style={styles.button} text_style={styles.text} onPress={() => alertDeleteUser()}/>
+
+                  <ButtonApp title={'Descartar y Volver'} onPress={() => navigation.goBack()}/>
+
+              </View>
+
+              </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+
+          </SafeAreaView>
       }
 
         </SafeAreaView>
     );
 };
-export default UserManagement;
+export default UserConfig;
 
 
 const styles = StyleSheet.create({
