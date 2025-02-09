@@ -156,6 +156,8 @@ const SignupAdmin = ({navigation}) => {
         <ButtonAppSecondary title={'Crear cuenta'} button_style={styles.button} text_style={styles.text} 
         onPress={() => handlerequest(alias, name, surname, email, password, passwordcheck)}/>
 
+        <ButtonAppSecondary title={'Descartar y Volver'} button_style={styles.button2} text_style={styles.text} onPress={() => navigation.goBack()}/>
+
       </View>
 
       </TouchableWithoutFeedback>
@@ -198,6 +200,19 @@ const styles = StyleSheet.create({
     width: '80%',
     borderRadius: 10,
     marginTop:40,
+  },
+
+  button2: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#5ba4fc',
+    height: 50,
+    width: '80%',
+    borderRadius: 10,
+    marginTop:20,
+    marginBottom:20,
+
   },
 
   text: {

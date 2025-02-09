@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, FlatList, View, Image, TouchableOpacity, Modal, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, SafeAreaView, Platform } from 'react-native';
 
 import ButtonAppSecondary from '../../components/ButtonAppSecondary';
+import ButtonApp from '../../components/ButtonApp';
 import { ColorPicker } from 'react-native-color-picker';
 import Slider from '@react-native-community/slider';
 
@@ -34,7 +35,10 @@ const Stoplighconfig = ({navigation}) => {
     const [selector, setSelector] = useState('');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    
 
+    const[coloraux, setColorAux] = useState('');
 
     const fetchData = async () => {
 
@@ -65,6 +69,9 @@ const Stoplighconfig = ({navigation}) => {
     }, []);
 
     const savePickedColors = async () => {
+
+      setSaving(true)
+
 
   
       await fetch('https://'+ip+'/setStoplight', {
@@ -143,29 +150,61 @@ const Stoplighconfig = ({navigation}) => {
             <Text>{selector}</Text>
             </SafeAreaView>
 
-            <ColorPicker sliderComponent={Slider} oldColor={getOldColor()} onColorSelected={color => setColor(color)} style={{flex: 3}}/>
+            <ColorPicker sliderComponent={Slider} oldColor={getOldColor()} onColorSelected={color => setColorAux(color)} style={{flex: 3}}/>
 
             <SafeAreaView style={styles.view}> 
 
-            <ButtonAppSecondary title={'Descartar'} button_style={styles.button} text_style={styles.text} onPress={() => setModalStoplightVisible(false)}/>
+            <ButtonAppSecondary title={'Aceptar'} button_style={styles.button} text_style={styles.text} onPress={() => setColor(coloraux)}/>
+
+            <ButtonAppSecondary title={'Descartar'} button_style={styles.button2} text_style={styles.text} onPress={() => setModalStoplightVisible(false)}/>
 
           </SafeAreaView>
         </Modal>
 
         {loading && <Text style={styles.loading}>Cargando...</Text>}
 
+        {saving && <Text style={styles.loading}>Guardando cambios...</Text>}
+
         {data &&
 
         <SafeAreaView style={styles.modalcontainer}> 
 
-            <ButtonAppSecondary title={'Neutro'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Neutro')}/>
-            <ButtonAppSecondary title={'Entrada aproximación'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Entrada aproximación')}/>
-            <ButtonAppSecondary title={'Entrada'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Entrada')}/>
-            <ButtonAppSecondary title={'Take profit aproximación'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Take profit aproximación')}/>
-            <ButtonAppSecondary title={'Take profit salida'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Take profit salida')}/>
-            <ButtonAppSecondary title={'Stop loss aproximación'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Stop loss aproximación')}/>
-            <ButtonAppSecondary title={'Stop loss salida'} button_style={styles.button} text_style={styles.text} onPress={() => configColor('Stop loss salida')}/>
-            <ButtonAppSecondary title={'Guardar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => savePickedColors()}/>
+            <ButtonAppSecondary title={'Neutro'} text_style={styles.buttonText} onPress={() => configColor('Neutro')}
+            button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: neutral, height: 50, width: '80%', 
+              borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Entrada aproximación'} text_style={styles.buttonText} onPress={() => configColor('Entrada aproximación')}
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: ent_apx, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Entrada'} text_style={styles.buttonText} onPress={() => configColor('Entrada')}
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: ent_ent, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Take profit aproximación'} text_style={styles.buttonText} onPress={() => configColor('Take profit aproximación')}
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: sal_tp_apx, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Take profit salida'} text_style={styles.buttonText} onPress={() => configColor('Take profit salida')}
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: sal_tp_sal, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Stop loss aproximación'} text_style={styles.buttonText} onPress={() => configColor('Stop loss aproximación')} 
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: sal_sl_apx, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonAppSecondary title={'Stop loss salida'} text_style={styles.buttonText} onPress={() => configColor('Stop loss salida')}
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: sal_sl_sal, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonApp title={'Guardar cambios'} text_style={styles.buttonText} onPress={() => savePickedColors()} 
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: neutral, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
+            <ButtonApp title={'Descartar y Volver'} text_style={styles.buttonText} onPress={() => navigation.goBack()} 
+              button_style={{ alignItems: 'center', alignSelf: 'center', justifyContent: 'center', backgroundColor: neutral, height: 50, width: '80%', 
+                borderRadius: 10, marginTop:10, borderColor: 'grey', borderWidth: 0.5,}} />
+
 
         </SafeAreaView>
 
@@ -238,6 +277,18 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
 
+  button2: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#5ba4fc',
+    height: 50,
+    width: '80%',
+    borderRadius: 10,
+    marginTop:20,
+    marginBottom: 20
+  },
+
   text: {
     color: 'white'
   },
@@ -273,6 +324,23 @@ const styles = StyleSheet.create({
     paddingLeft: '4%',
     alignSelf: 'center',
 
-  }
+  },
+
+  buttonPublish: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    height: 50,
+    width: '80%',
+    borderRadius: 10,
+    marginTop:10,
+    borderColor: 'grey',
+    borderWidth: 0.5,
+  },
+
+  buttonText: {
+    color: 'black'
+  },
 
  });

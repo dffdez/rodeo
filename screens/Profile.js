@@ -7,6 +7,8 @@ import TextInputAppSecondary from '../components/TextInputAppSecondary';
 import ButtonApp from '../components/ButtonApp';
 import ButtonAppSecondary from '../components/ButtonAppSecondary';
 import Logo from '../assets/logo_h.png';
+import { CommonActions } from '@react-navigation/native';
+
 
 
 import {useAuth} from '../context/AuthContext';
@@ -49,6 +51,17 @@ const Profile = ({navigation}) => {
     }
 
     const handlerequest = () => {
+
+      navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0,
+                    routes: [
+                      { name: 'Perfil' },
+                    ],
+                  })
+                );
+
+
       logout()
       setModalVisible(false)
 
@@ -176,7 +189,7 @@ const Profile = ({navigation}) => {
                     <TextInputAppSecondary ph='Contraseña' val={password} setVal={setPassword} secure={true} style={textStylePassword}/>
                     <TextInputAppSecondary ph='Confirmar contraseña' val={passwordcheck} setVal={setPasswordCheck} secure={true} style={textStylePassword}/>
                     <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => changePassword()}/>
-                    <ButtonApp title={'Volver'} onPress={() => setModalPassVisible(false)}/>
+                    <ButtonApp title={'Descartar y Volver'} onPress={() => setModalPassVisible(false)}/>
 
                   </View>
 
@@ -203,7 +216,7 @@ const Profile = ({navigation}) => {
                     <TextInputAppSecondary ph='Correo electrónico' val={email} setVal={setEmail} inputmod='email' style={styles.inputtext}/>
 
                     <ButtonAppSecondary title={'Confirmar cambios'} button_style={styles.button} text_style={styles.text} onPress={() => changeUserData()}/>
-                    <ButtonApp title={'Volver'} onPress={() => setModalDataVisible(false)}/>
+                    <ButtonApp title={'Descartar y Volver'} onPress={() => setModalDataVisible(false)}/>
 
                   </View>
 
@@ -218,9 +231,9 @@ const Profile = ({navigation}) => {
 
 
 
-        {loading && jwtToken && <Text style={styles.loading}>Cargando...</Text>}
+        {loading && <Text style={styles.loading}>Cargando...</Text>}
 
-        {data &&
+        {data && jwtToken && authState.authenticated &&
 
           <View style={styles.view}>
 
@@ -231,11 +244,13 @@ const Profile = ({navigation}) => {
           <Text style={styles.alias}>@{alias}</Text>
 
 
-          <ButtonAppSecondary title={'Datos de usuario'} button_style={styles.button} text_style={styles.text} onPress={() => setModalDataVisible(true)}/>
-          <ButtonAppSecondary title={'Contraseña'} button_style={styles.button} text_style={styles.text} onPress={() => setModalPassVisible(true)}/>
+          <ButtonAppSecondary title={'Datos de usuario'} button_style={styles.button} text_style={styles.text} onPress={() => navigation.navigate('UserData')}/>
+          <ButtonAppSecondary title={'Cambiar contraseña'} button_style={styles.button2} text_style={styles.text2} onPress={() => navigation.navigate('PasswordChange')}/>
 
-          <ButtonAppSecondary title={'Cerrar sesión'} button_style={styles.button} text_style={styles.text} onPress={() => disconnect()}/>
 
+          {!authState.admin &&
+            <ButtonAppSecondary title={'Cerrar sesión'} button_style={styles.button} text_style={styles.text} onPress={() => disconnect()}/>
+          }
           </View>
 
         }
@@ -344,6 +359,23 @@ const styles = StyleSheet.create({
     paddingLeft: '4%',
     alignSelf: 'center',
 
+  },
+
+  button2: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    height: 50,
+    width: '80%',
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: 'grey',
+    marginTop:20,
+  },
+
+  text2: {
+    color: 'black'
   }
 
  });

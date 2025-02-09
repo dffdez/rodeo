@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import * as Notifications from 'expo-notifications'
-import { StyleSheet, Text, TextInput, View, Button, Platform, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, Platform, Image, KeyboardAvoidingView, TouchableOpacity, Keyboard } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -20,6 +20,8 @@ import TrackingAll from '../screens/TrackingAll';
 import ChatUser from './../screens/ChatUser';
 import Profile from '../screens/Profile';
 import ProfileAdmin from '../screens/ProfileAdmin';
+import UserData from '../screens/Profilescreens/UserData';
+import PasswordChange from '../screens/Profilescreens/PasswordChange';
 
 //admin screens
 import TrackConf from '../screens/TrackConf';
@@ -29,8 +31,10 @@ import ChatIndex from './../screens/ChatIndex';
 import ChatAdmin from '../screens/ChatAdmin';
 import Stoplighconfig from '../screens/Admin/StoplightConfig';
 import UserManagement from '../screens/Admin/UsersManagement';
+import UserConfig from '../screens/Admin/UserConfig';
 import ReferenceConfig from '../screens/Admin/ReferenceConfig';
 import TrackConfRef from '../screens/Admin/TrackConfRef';
+import TrackingAdminAdd from '../screens/TrackingAdminAdd';
 
 
 import rodeoserver from '../serverconn_conf/ServerAddress'
@@ -100,6 +104,7 @@ const Home = () => {
             projectId
         })).data;
 
+        console.log(token)
 
         //Almacena el token en la base de datos
         await fetch('https://'+ip+'/setPushNotificationToken', {
@@ -167,7 +172,7 @@ const Home = () => {
                 <Tab.Screen name="Seguimiento" component={TrackUserNav} options={{headerTitle: "Seguimiento", headerShown: false}}/>
                 <Tab.Screen name="Blog" component={Blog}  options={{headerTitle: "Blog", headerShown: true }} />
                 <Tab.Screen name="Consultas" component={ChatUser} options={{headerTitle: "Consultas", headerShown: true}}/>
-                <Tab.Screen name="Perfil" component={Profile} options={{headerTitle: "Perfil", headerShown: false }}/>
+                <Tab.Screen name="Perfil" component={UserProfileNav} options={{headerTitle: "Perfil", headerShown: false }}/>
             </>
         )}
 
@@ -183,8 +188,14 @@ const Home = () => {
 const TrackNav = () => {
     return(
         <Stack.Navigator screenOptions={{headerShown: true}}>
-            <Stack.Screen name="TrackingAdmin" component={TrackingAdmin} options={{headerTitle: "Seguimiento"}}/>
+            <Stack.Screen name="TrackingAdmin" component={TrackingAdmin} options={{headerTitle: "Seguimiento", headerRight: () => 
+            (<TouchableOpacity>
+                <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+            </TouchableOpacity>
+            ), }}/>
             <Stack.Screen name="TrackConf" component={TrackConf} options={{headerTitle: "Seguimiento"}}/>
+            <Stack.Screen name="TrackingAdminAdd" component={TrackingAdminAdd} options={{headerTitle: "Seguimiento"}} />
+
         </Stack.Navigator>
     )
 }
@@ -193,7 +204,11 @@ const TrackNav = () => {
 const TrackUserNav = () => {
     return(
         <Stack.Navigator screenOptions={{headerShown: true}}>
-            <Stack.Screen name="TrackingFavs" component={Tracking} options={{headerTitle: "Seguimiento"}}/>
+            <Stack.Screen name="TrackingFavs" component={Tracking} options={{headerTitle: "Seguimiento", headerRight: () => 
+            (<TouchableOpacity>
+                <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+            </TouchableOpacity>
+            ), }}/>
             <Stack.Screen name="TrackingAll" component={TrackingAll} options={{headerTitle: "Seguimiento"}} />
         </Stack.Navigator>
     )
@@ -208,18 +223,29 @@ const ChatNav = () => {
     )
 }
 
+const UserProfileNav = () => {
+    return(
+        <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Screen name="ProfileUser" component={Profile} options={{headerTitle: "Perfil", headerShown: false}}/>
+            <Stack.Screen name="UserData" component={UserData} options={{headerTitle: "Datos de usuario"}}/>
+            <Stack.Screen name="PasswordChange" component={PasswordChange} options={{headerTitle: "Cambiar contraseña"}}/>
+        </Stack.Navigator>
+    )
+}
+
 
 
 const ProfileNav = () => {
     return(
         <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="ProfileAdmin" component={ProfileAdmin} />
-            <Stack.Screen name="Profile" component={Profile} options={{headerTitle: "Perfil", headerShown: true}}/>
+            <Stack.Screen name="Profile" component={UserProfileNav} options={{headerTitle: "Perfil", headerShown: true}}/>
             <Stack.Screen name="UserManagement" component={UserManagement} options={{headerTitle: "Gestión de usuarios", headerShown: true}}/>
+            <Stack.Screen name="UserConfig" component={UserConfig} options={{headerTitle: "Gestión de usuarios", headerShown: true}}/>
             <Stack.Screen name="SignupAdmin" component={SignupAdmin} options={{headerTitle: "Nuevo Administrador", headerShown: true}}/>
             <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} options={{headerTitle: "Semáforo", headerShown: true}}/> 
             <Stack.Screen name="ReferenceConfig" component={ReferenceConfig} options={{headerTitle: "Referencias", headerShown: true}}/> 
-            <Stack.Screen name="TrackConfRef" component={TrackConfRef} />
+            <Stack.Screen name="TrackConfRef" component={TrackConfRef} options={{headerTitle: "Referencias", headerShown: true}}/>
 
 
         </Stack.Navigator>
@@ -243,7 +269,7 @@ const Navigation = () => {
       return(
         <NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
-                {authState.authenticated && jwtToken ? (
+                {authState.authenticated ? (
                     <>
                         <Stack.Screen name="Home" component={Home} />
                     </>
