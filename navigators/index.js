@@ -104,7 +104,6 @@ const Home = () => {
             projectId
         })).data;
 
-        console.log(token)
 
         //Almacena el token en la base de datos
         await fetch('https://'+ip+'/setPushNotificationToken', {
@@ -243,7 +242,11 @@ const ProfileNav = () => {
             <Stack.Screen name="UserManagement" component={UserManagement} options={{headerTitle: "Gestión de usuarios", headerShown: true}}/>
             <Stack.Screen name="UserConfig" component={UserConfig} options={{headerTitle: "Gestión de usuarios", headerShown: true}}/>
             <Stack.Screen name="SignupAdmin" component={SignupAdmin} options={{headerTitle: "Nuevo Administrador", headerShown: true}}/>
-            <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} options={{headerTitle: "Semáforo", headerShown: true}}/> 
+            <Stack.Screen name="Stoplighconfig" component={Stoplighconfig} options={{headerTitle: "Semáforo", headerShown: true, headerRight: () => 
+            (<TouchableOpacity>
+                <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+            </TouchableOpacity>
+            ), }}/> 
             <Stack.Screen name="ReferenceConfig" component={ReferenceConfig} options={{headerTitle: "Referencias", headerShown: true}}/> 
             <Stack.Screen name="TrackConfRef" component={TrackConfRef} options={{headerTitle: "Referencias", headerShown: true}}/>
 
