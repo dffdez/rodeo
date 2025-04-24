@@ -4,8 +4,10 @@ import { StyleSheet, Text, FlatList, View, Image, TouchableOpacity, Modal, Keybo
 
 import ButtonAppSecondary from '../../components/ButtonAppSecondary';
 import ButtonApp from '../../components/ButtonApp';
-import { ColorPicker } from 'react-native-color-picker';
+import { ColorPicker, fromHsv } from 'react-native-color-picker';
 import Slider from '@react-native-community/slider';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {useAuth} from '../../context/AuthContext';
 
@@ -36,6 +38,7 @@ const Stoplighconfig = ({navigation}) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [infoStoplight, setModalInfoStoplight] = useState(false);
     
 
     const[coloraux, setColorAux] = useState('');
@@ -61,6 +64,15 @@ const Stoplighconfig = ({navigation}) => {
       setTpSal(data[4])
       setStApx(data[5])
       setStSal(data[6])
+
+      //Update info button
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity onPress={() => setModalInfoStoplight(true)}>
+            <Ionicons style={{paddingRight: 10}} name={'information-circle-outline'} size={30} color={'black'} />
+          </TouchableOpacity>
+        ),
+      });
 
     }
   
@@ -144,13 +156,50 @@ const Stoplighconfig = ({navigation}) => {
       
       <SafeAreaView style={styles.container}>
 
+<Modal animationType="slide" transparent={true} visible={infoStoplight}>
+
+<SafeAreaView style={styles.modalcontainer}> 
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                  <View style={styles.modalview}>
+
+                    <View style={styles.listInfoWrapper}>
+                      <Text style={styles.infoColorTitleBold}>Configurar el color asociado a un estado</Text>
+                    </View>
+
+                    <View style={styles.listInfoWrapper}>
+                      <Text style={styles.infoColorTitle}>0º El color actual se muestra en el semicírculo izquierdo</Text>
+                    </View>
+
+                    <View style={styles.listInfoWrapper}>
+                      <Text style={styles.infoColorTitle}>1º Seleccionar el nuevo color en la circunferencia de colores exterior y los controles de la parte inferior de la pantalla</Text>
+                    </View>
+
+                    <View style={styles.listInfoWrapper}>
+                      <Text style={styles.infoColorTitle}>2º Pulsar en el botón "Aceptar" para aplicar el color y volver a la pantalla anterior</Text>
+                    </View>
+
+                    <View style={styles.listInfoWrapper}>
+                      <Text style={styles.infoColorTitle}>3º Pulsar en el botón "Guardar cambios" para guardar la configuración</Text>
+                    </View>
+
+                    <ButtonAppSecondary button_style={styles.buttonAD} text_style={styles.buttonText} title={'Volver'} onPress={() => setModalInfoStoplight(false) }/>
+
+                  </View>
+              </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+
+        </SafeAreaView>
+        </Modal>
+
         <Modal animationType="slide" transparent={false} visible={modalStoplightVisible}>
           <SafeAreaView style={styles.view}> 
 
             <Text>{selector}</Text>
             </SafeAreaView>
 
-            <ColorPicker sliderComponent={Slider} oldColor={getOldColor()} onColorSelected={color => setColorAux(color)} style={{flex: 3}}/>
+            <ColorPicker sliderComponent={Slider} oldColor={getOldColor()} onColorChange={color => setColorAux(fromHsv(color))} style={{flex: 3}}/>
 
             <SafeAreaView style={styles.view}> 
 
@@ -341,6 +390,69 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: 'black'
+  },
+
+  listInfoWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    //borderBottomWidth: 0.5,
+    //borderTopWidth: 0.5,
+    //alignItems: 'center',
+
+  },
+
+  infoRow: {
+    backgroundColor: '#fff',
+    flex: 1,
+    marginBottom: 20,
+    marginTop:20,
+    fontSize: 15,
+    alignItems: 'flex-end',
+    //paddingHorizontal: 10,
+  },
+
+  infoColorTitleBold: {
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: '4%',
+    paddingRight: '4%',
+    color: 'black',
+    marginTop: 10,
+    marginBottom: 30,
+    fontWeight: 'bold'
+    
+  },
+
+  infoColorTitle: {
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: '8%',
+    paddingRight: '8%',
+    color: 'black',
+    marginTop: 10,
+    marginBottom: 2,
+    flex: 2
+  },
+
+  modalcontainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+
+  buttonAD: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderColor: 'grey',
+    height: 50,
+    width: '80%',
+    borderRadius: 10,
+    borderWidth: 0.5,
+    marginTop: 50,
   },
 
  });
