@@ -105,7 +105,7 @@ Antes de comenzar es necesario:
 <ul>
    <li><a>Instalar Node.js</a></li>
    <li><a>Instalar expo-cli</a></li>
-   <li><a>Instalar la aplicación Expo Go en un dispositvo físico o en un emulador/simulador</a></li>
+   <li><a>Instalar la aplicación Expo Go en un dispositivo físico o en un emulador/simulador</a></li>
    <li><a>Instalar Visual Studio Code (recomendado)</a></li>
 
 </ul>
@@ -180,7 +180,7 @@ la aplicación Expo Go en el emulador mostrando la interfaz de la aplicación.
 Los pasos a seguir para utilizar la aplicación con el _.apk_ son:
 
 1. Descargar el archivo _.apk_, ubicado en el directorio raíz del proyecto, en un dispositivo físico o emulador de Android.
-2. Buscar el _.apk_ en el explorador de archivo y pulsar sobre el archivo.
+2. Buscar el _.apk_ en el explorador de archivos y pulsar sobre el archivo.
 3. Permitir instalar aplicaciones de fuentes desconocidas (si lo pide).
 4. Aceptar las opciones e instalar.
 
