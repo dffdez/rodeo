@@ -1,3 +1,5 @@
+<a id="readme-top"></a>
+
 ![Stars](https://img.shields.io/github/stars/dffdez/rodeo?style=social)
 ![Forks](https://img.shields.io/github/forks/dffdez/rodeo?style=social)
 ![Watchers](https://img.shields.io/github/watchers/dffdez/rodeo?style=social)
@@ -37,19 +39,23 @@
   <br />
   <ol>
     <li>
-      <a href="#about-the-project">Sobre el proyecto</a>
+      <a href="#sobre-el-proyecto">Sobre el proyecto</a>
       <ul>
-        <li><a href="#built-with">Tecnologías utilizadas</a></li>
+        <li><a href="#tecnologías-utilizadas">Tecnologías utilizadas</a></li>
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Primeros pasos</a>
+      <a href="#primeros-pasos">Primeros pasos</a>
       <ul>
-        <li><a href="#prerequisites">Prerrequisitos</a></li>
-        <li><a href="#installation">Instalación</a></li>
+        <li><a href="#prerrequisitos">Prerrequisitos</a></li>
+        <li><a href="#instalación">Instalación</a></li>
+        <ul>
+          <li><a href="#instalación-desde-el-repositorio">Instalación desde el repositorio</a></li>
+          <li><a href="#instalación-del-apk">Instalación del <i>.apk</i></a></li>
+        </ul>
       </ul>
     </li>
-    <li><a href="#usage">Ejemplo de uso</a></li>
+    <li><a href="#ejemplo-de-uso">Ejemplo de uso</a></li>
   </ol>
     <br />
 
@@ -89,7 +95,10 @@ Las principales tecnologías que se han utilizado en este proyecto son:
 <!-- GETTING STARTED -->
 ## Primeros pasos
 
-En esta sección se detallan los pasos a seguir para la instalación de la aplicación.
+En esta sección se detallan los pasos a seguir para utilizar este proyecto.
+
+Adicionalmente, en este repositorio se incluye el _.apk_ de la aplicación para instalarla directamente en dispositivos Android.
+
 ### Prerrequisitos
 
 Antes de comenzar es necesario:
@@ -134,6 +143,8 @@ Antes de comenzar es necesario:
 
 ### Instalación
 
+#### Instalación desde el repositorio
+
 Los pasos a seguir para probar este proyecto son:
 
 1. Clonar el repositorio
@@ -163,6 +174,20 @@ Debajo del código QR debajo aparecen unas instrucciones que indican que debe pu
 la aplicación Expo Go en el emulador mostrando la interfaz de la aplicación.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+#### Instalación del _.apk_
+
+Los pasos a seguir para utilizar la aplicación con el _.apk_ son:
+
+1. Descargar el archivo _.apk_, ubicado en el directorio raíz del proyecto, en un dispositivo físico o emulador de Android.
+2. Buscar el _.apk_ en el explorador de archivo y pulsar sobre el archivo.
+3. Permitir instalar aplicaciones de fuentes desconocidas (si lo pide).
+4. Aceptar las opciones e instalar.
+
+Con estos pasos la aplicación estará instalada en el dispositivo.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 
