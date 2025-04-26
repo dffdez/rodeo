@@ -179,7 +179,7 @@ la aplicación Expo Go en el emulador mostrando la interfaz de la aplicación.
 
 Los pasos a seguir para utilizar la aplicación con el _.apk_ son:
 
-1. Descargar el archivo _.apk_, ubicado en el directorio raíz del proyecto, en un dispositivo físico o emulador de Android.
+1. Descargar en un dispositivo físico o emulador de Android el archivo _.apk_, que puede encontrar en https://github.com/dffdez/rodeo/releases/tag/v1.0.0
 2. Buscar el _.apk_ en el explorador de archivos y pulsar sobre el archivo.
 3. Permitir instalar aplicaciones de fuentes desconocidas (si lo pide).
 4. Aceptar las opciones e instalar.
