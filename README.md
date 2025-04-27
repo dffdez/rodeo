@@ -1,10 +1,13 @@
 <a id="readme-top"></a>
 
-![Stars](https://img.shields.io/github/stars/dffdez/rodeo?style=social)
-![Forks](https://img.shields.io/github/forks/dffdez/rodeo?style=social)
-![Watchers](https://img.shields.io/github/watchers/dffdez/rodeo?style=social)
-![Contributors](https://img.shields.io/github/contributors/dffdez/rodeo)
-![Last Commit](https://img.shields.io/github/last-commit/dffdez/rodeo)
+<p align="center">
+  <img src="https://img.shields.io/github/stars/dffdez/rodeo" alt="Stars" />
+  <img src="https://img.shields.io/github/forks/dffdez/rodeo" alt="Forks" />
+  <img src="https://img.shields.io/github/watchers/dffdez/rodeo" alt="Watchers" />
+  <img src="https://img.shields.io/github/contributors/dffdez/rodeo" alt="Contributors" />
+  <img src="https://img.shields.io/github/last-commit/dffdez/rodeo" alt="Last Commit" />
+</p>
+
 
 <!-- PROJECT LOGO -->
 <br />
